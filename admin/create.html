@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Creation Station</title>
+
+    <!--bootstrap css and icons-->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BmbxuPwQa2lc/FVzBcNJ7UAyJxM6wuqIj61tLrc4wSX0szH/Ev+nYRRuWlolflfl" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.0/font/bootstrap-icons.css">
+    <link rel="icon" href="./media/journal-code.png">
+
+    <!--bootstrap js/popper (bundled)-->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/js/bootstrap.bundle.min.js" integrity="sha384-b5kHyXgcpbZJO/tY9Ul7kGkf1S0CWuKcCD38l8YkeH8z8QjE0GmW1gYU5S9FOnJ0" crossorigin="anonymous">
+    </script>
+    <script src="../assets/jquery-3.6.0.min.js"></script>
+
+    <link href="../iCSS/theVibe.css" rel="stylesheet">
+    <link href="./aCSS/adminVibe.css" rel="stylesheet">
+    <script src="../iJS/shrinker.js"></script>
+    <script src="./aJS/loader.js"></script>
+    <script src="./aJS/articleLoader.js"></script>
+    <script src="./aJS/signer.js"></script>
+
+    <script>
+        let oCount = 0;
+        $(document).ready(function() {
+            letsRock();
+            let urlp = new URLSearchParams(window.location.search);
+            $(".homeLink").attr("href", $("#theBook").attr("href") + urlp.get("u"));
+            signTime();
+        });
+    </script>
+    <noscript>Get JavaScript to properly view page</noscript>
+</head>
+
+<body class="bg-body">
+    <!--nav-->
+    <nav class="navbar navbar-dark bg-dark text-white container-fluid position-fixed m-0 primary-nav d-flex" style="z-index: 500; top: 0%;">
+        <div class="flex-row container-fluid">
+            <!--journal logo thing-->
+            <a href="index.html?u=" id="theBook" class="link-light text-decoration-none homeLink"><i
+                    class="py-1 bi-journal-code m-0 flex-fill"></i></a>
+            <a href="index.html?u=" id="headText" class="link-light flex-fill text-decoration-none homeLink">
+                <div class="title py-2 display-4 text-st ps-sm-3 h-100 d-none d-md-block">
+                    Tryhard blog
+                </div>
+            </a>
+            <div class="flex-lg-grow-0">
+                <!--little 3-line thing-->
+                <button class="navbar-toggler end-50" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDarkDropdown" aria-controls="navbarNavDarkDropdown" aria-expanded="false" aria-label="Toggle navigation">
+                    <!--icon itself-->
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+            </div>
+            <!--dropdown from 3-line thing-->
+            <div class="collapse navbar-collapse bg-transparent" id="navbarNavDarkDropdown">
+                <ul class="navbar-nav mb-2 d-inline-block container-fluid">
+                    <!--home-->
+                    <a href="index.html?u=" class="text-decoration-none link-light homeLink">
+                        <li class="nav-link ps-3">
+                            Home
+                        </li>
+                    </a>
+                    <!--sign out-->
+                    <div class="text-decoration-none link-light" id="signOut">
+                        <li class="nav-link ps-3">
+                            Sign Out
+                        </li>
+                    </div>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <!--main boi-->
+    <main>
+        <div class="position-fixed align-baseline bg-light rounded-2 align-middle p-4" style="z-index: 600; top: 40%; left: 45%;" id="loadSpinner">
+            <div class="spinner-border text-dark">
+            </div>
+        </div>
+        <!--overarching placeholder class-->
+        <div class="ph mt-5 pt-3">
+            <div id='testHolder'></div>
+        </div>
+        <!--overarching placeholder class-->
+        <!--commit button-->
+        <button class="btn-outline-dark rounded-pill text-center text-nowrap position-fixed rounded-circle 
+        ratio-1x1 bi-file-earmark-arrow-up fs-5 overflow-hidden" id="commitButton">
+        </button>
+    </main>
+
+    <!--footer-->
+    <footer class="container-fluid pt-5 pb-3 bg-dark text-muted">
+        <ul class="d-inline-block container-fluid list-unstyled list-group-flush">
+            <li class="h5 m-0">
+                Links
+            </li>
+            <li class="ps-3">
+                <a href="index.html?u=" class="link-secondary homeLink">
+                    Home
+                </a>
+            </li>
+            <li class="ps-3 link-secondary text-decoration-underline" id="contact">
+                Contact
+            </li>
+        </ul>
+    </footer>
+</body>
+
+</html>
