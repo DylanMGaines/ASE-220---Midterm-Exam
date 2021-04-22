@@ -23,6 +23,8 @@ function cardLoader(data, accessing, templateString) {
 
 function placehold() {
     let currentLoaded;
+    //replace this url with a server:port url eg $.getJSON('localhost:1337\API', function(data){})
+    //server must be runnin tho
     $.getJSON("https://jsonblob.com/api/5df95c1f-8374-11eb-a0d4-a5d78bdc5d78/", function(data) {
         //initial load (loads 6)
         let template;
