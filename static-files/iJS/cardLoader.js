@@ -3,10 +3,11 @@ const bitsNPieces = ['.card-title', '.card-text', '.text-muted']; //title, subti
 let urlParameters = new URLSearchParams(window.location.search);
 
 function cardLoader(data, accessing, templateString) {
+    console.log(accessing);
     let $htmlString = $(templateString).clone(true);
+    $htmlString = $htmlString[0];
     let accessed = data[accessing];
     var i = 0;
-    $(".homeLink").attr("href", "index.html?un=" + urlParameters.get("un"));
     for (x in accessed) {
         $(bitsNPieces[i], $htmlString).append(accessed[x]);
         i++;
@@ -23,26 +24,22 @@ function cardLoader(data, accessing, templateString) {
 
 function placehold() {
     let currentLoaded;
-    $.getJSON("https://jsonblob.com/api/5df95c1f-8374-11eb-a0d4-a5d78bdc5d78/", function(data) {
+    $.getJSON("API/articles", function(data) {
         //initial load (loads 6)
-        let template;
-        $.getJSON("./assets/templates.json", function(templates) {
-            template = templates.card;
-            for (currentLoaded = 0; currentLoaded < data.articles.length && currentLoaded < 6; currentLoaded++) {
-                cardLoader(data.articles, (data.articles.length - (currentLoaded + 1)), template);
+        $.getJSON("API/templates/card", function(template) {
+            for (currentLoaded = 0; currentLoaded < data.length && currentLoaded < 6; currentLoaded++) {
+                cardLoader(data, (data.length - (currentLoaded + 1)), template);
             }
             //load button clicked (loads 6 more)
             $("#loadButton").click(function() {
-                for (; currentLoaded < data.articles.length && currentLoaded < 6; currentLoaded++) {
-                    cardLoader(data.articles, currentLoaded);
-                    console.log(data.articles[currentLoaded]);
+                for (; currentLoaded < data.length && currentLoaded < 6; currentLoaded++) {
+                    cardLoader(data, currentLoaded);
                 }
             });
         });
     });
-
 }
 
 function reqTime(aNum) {
-    window.location.href = "./article.html?" + ((urlParameters.has("un")) ? 'un=' + urlParameters.get("un") : "") + '&a=' + aNum;
+    window.location.href = "./article?" + 'a=' + aNum;
 }
