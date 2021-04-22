@@ -1,0 +1,105 @@
+.shrink {
+    padding-top: 0;
+    padding-bottom: 0;
+    min-height: 1rem;
+}
+
+.icon-shrink {
+    font-size: 1rem;
+    padding-top: 0;
+    transition: all 0.4s ease-in-out;
+    -webkit-transition: all 0.4s ease-in-out;
+    -moz-transition: all 0.4s ease-in-out;
+}
+
+.primary-nav,
+.navbar-toggler-icon {
+    transition: all 0.4s ease-in-out;
+    -webkit-transition: all 0.4s ease-in-out;
+    -moz-transition: all 0.4s ease-in-out;
+}
+
+.display-4 {
+    transition: all 0.4s ease-in-out;
+    -webkit-transition: all 0.4s ease-in-out;
+    -moz-transition: all 0.4s ease-in-out;
+}
+
+.display-6 {
+    font-size: 1.75rem;
+    transition: all 0.4s ease-in-out;
+    -webkit-transition: all 0.4s ease-in-out;
+    -moz-transition: all 0.4s ease-in-out;
+}
+
+.bi-journal-code {
+    font-size: 3rem;
+    transition: all 0.4s ease-in-out;
+    -webkit-transition: all 0.4s ease-in-out;
+    -moz-transition: all 0.4s ease-in-out;
+}
+
+.shrunk {
+    font-size: 2rem;
+    transition: all 0.4s ease-in-out;
+    -webkit-transition: all 0.4s ease-in-out;
+    -moz-transition: all 0.4s ease-in-out;
+}
+
+.nav-link:hover {
+    background-color: #495057;
+}
+
+.theHandPrint {
+    background-image: url("../media/theHand.png");
+    background-size: 4%;
+    background-origin: content-box;
+    background-position-x: 50%;
+    background-position-y: 66%;
+    background-repeat: no-repeat;
+}
+
+#signIn:hover,
+#signOut:hover,
+#contact:hover {
+    cursor: pointer;
+}
+
+@media only screen and (max-width:767px) {
+    .bi-journal-code {
+        text-align: start;
+        font-size: 2rem;
+        transition: all 0.4s ease-in-out;
+        -webkit-transition: all 0.4s ease-in-out;
+        -moz-transition: all 0.4s ease-in-out;
+    }
+    .bi-journal-code::after {
+        content: " Tryhard blog";
+        font-size: 1.25rem;
+        vertical-align: 20%;
+        transition: all 0.4s ease-in-out;
+        -webkit-transition: all 0.4s ease-in-out;
+        -moz-transition: all 0.4s ease-in-out;
+    }
+    .shrunk {
+        font-size: 1.69rem;
+    }
+    .shrunk::after {
+        font-size: 1rem;
+        vertical-align: 20%;
+    }
+}
+
+@media only screen and (max-width:280px) {
+    .bi-journal-code {
+        font-size: 1.5rem;
+    }
+    .bi-journal-code::after {
+        vertical-align: 10%;
+        padding-right: 0;
+        margin-right: 0;
+    }
+    .bi-signpost-split {
+        font-size: .75rem;
+    }
+}
