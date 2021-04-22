@@ -12,7 +12,7 @@ let app = express();
 
 //console.log(Date.now().toString().slice(-6));
 
-app.use(express.static(path.join(__dirname, 'static_files')));
+app.use(express.static(path.join(__dirname, '/site')));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(session({ secret: "my password" }));
@@ -28,10 +28,20 @@ function checkIfUserIsSignedIn(req, res, next) {
 
 //default, public
 app.get('/', function(req, res, next) {
-    fs.readFile('plebs.html', function(err, data) {
+    fs.readFile('./site/index.html', function(err, data) {
         //instead of loading the file from JSON blob, loads a local file
+        console.log(data);
         res.send(data.toString());
-    })
+    });
+});
+
+//when GET request made to URL/API (eg 127.0.0.1:1337/API), the URL/API page gets the data and effectively a useable file
+app.get('/API', function(req, res, next) {
+    //example get
+    fs.readFile('data/articles.json', function(err, data) {
+        res.json(data.toString());
+    });
+    return;
 });
 
 //private. Meant to be used to view and add user base, now has sign in functionality
@@ -46,7 +56,7 @@ app.get('/admin', checkIfUserIsSignedIn, function(req, res, next) {
     fs.readFile('mods.html', function(err, data) {
         //instead of loading the file from JSON blob, loads a local file
         res.send(data.toString());
-    })
+    });
 });
 
 //sign in man
@@ -57,15 +67,6 @@ app.get('/auth/signin', function(req, res, next) {
     })
 });
 
-//when GET request made to URL/API (eg 127.0.0.1:1337/API), the URL/API page gets the data and effectively a useable file
-app.get('/API', function(req, res, next) {
-    //example get
-    fs.readFile('data/info.json', function(err, data) {
-        res.json(data.toString());
-    });
-    return;
-});
-
 //GET reqs to this url get the users.json file
 app.get('/API/users', function(req, res, next) {
     fs.readFile('data/users.json', function(err, data) {
@@ -73,6 +74,7 @@ app.get('/API/users', function(req, res, next) {
     });
     return;
 });
+
 //GET reqs to this url get the users.json file
 app.post('/API/signin', function(req, res, next) {
     fs.readFile('data/users.json', function(err, data) {
