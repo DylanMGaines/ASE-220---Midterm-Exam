@@ -25,25 +25,24 @@ function placehold() {
     let currentLoaded;
     //replace this url with a server:port url eg $.getJSON('localhost:1337\API', function(data){})
     //server must be runnin tho
-    /*
-        $.getJSON("localhost:1337/API", function(data) {
-            //initial load (loads 6)
-            let template;
-            $.getJSON("./assets/templates.json", function(templates) {
-                template = templates.card;
-                for (currentLoaded = 0; currentLoaded < data.length && currentLoaded < 6; currentLoaded++) {
-                    cardLoader(data, (data.length - (currentLoaded + 1)), template);
+    $.getJSON("https://jsonblob.com/api/5df95c1f-8374-11eb-a0d4-a5d78bdc5d78/", function(data) {
+        //initial load (loads 6)
+        let template;
+        $.getJSON("./assets/templates.json", function(templates) {
+            template = templates.card;
+            for (currentLoaded = 0; currentLoaded < data.articles.length && currentLoaded < 6; currentLoaded++) {
+                cardLoader(data.articles, (data.articles.length - (currentLoaded + 1)), template);
+            }
+            //load button clicked (loads 6 more)
+            $("#loadButton").click(function() {
+                for (; currentLoaded < data.articles.length && currentLoaded < 6; currentLoaded++) {
+                    cardLoader(data.articles, currentLoaded);
+                    console.log(data.articles[currentLoaded]);
                 }
-                //load button clicked (loads 6 more)
-                $("#loadButton").click(function() {
-                    for (; currentLoaded < data.articles.length && currentLoaded < 6; currentLoaded++) {
-                        cardLoader(data, currentLoaded);
-                        console.log(data[currentLoaded]);
-                    }
-                });
             });
         });
-    */
+    });
+
 }
 
 function reqTime(aNum) {
