@@ -7,7 +7,7 @@ let urlParameters;
 function letsRock() {
     urlParameters = new URLSearchParams(window.location.search);
     //if this page is edit.html
-    let isEditDotHTML = window.location.pathname.substring(window.location.pathname.lastIndexOf('/') + 1) == "edit.html";
+    let isEditDotHTML = window.location.pathname.substring(window.location.pathname.lastIndexOf('/') + 1) == "edit";
     articleObject = {
         nameTag: "",
         subtitle: "",
@@ -23,15 +23,15 @@ function letsRock() {
         author: ""
     };
     console.log(isEditDotHTML);
-    $.getJSON("./aAssets/templates.json", function(templates) {
-        $.getJSON("https://jsonblob.com/api/5df95c1f-8374-11eb-a0d4-a5d78bdc5d78/", function(data) {
+    $.getJSON("/API/admin/templates/article", function(template) {
+        $.getJSON("/API/articles", function(data) {
             if (isEditDotHTML) {
                 var aNum = urlParameters.get("a");
-                for (thing in data.articles[aNum]) {
-                    articleObject[thing] = data.articles[aNum][thing];
+                for (thing in data[aNum]) {
+                    articleObject[thing] = data[aNum][thing];
                 }
             }
-            letsRoll(templates.article, isEditDotHTML);
+            letsRoll(template, isEditDotHTML);
             sender(isEditDotHTML);
         });
     });
@@ -47,14 +47,17 @@ function letsRoll(templateString, isEditDotHTML) {
     let i = 0;
     //loop through article object for title, subtitle, likeCount, figure caption
     for (x in articleObject) {
-        $(bitsNPieces[i], $htmlString).append(articleObject[x]);
+        if (i == 2 || i == 5) { i++; continue; }
+        $(bitsNPieces[i], $htmlString).val(articleObject[x]);
         if (i == 7) { break; }
         i++;
     }
+    $(bitsNPieces[2], $htmlString).append(articleObject['likes']);
+    $(bitsNPieces[5], $htmlString).append(articleObject['views']);
 
     let wasNotImage = true;
     if (articleObject.pathToImg.substring(0, 7) == "./media") {
-        $('.figure-img', $htmlString).attr('src', articleObject.pathToImg);
+        $('.figure-img', $htmlString).attr('src', '.' + articleObject.pathToImg);
         wasNotImage = false;
     }
 
@@ -62,7 +65,7 @@ function letsRoll(templateString, isEditDotHTML) {
     $('#dateMade', $htmlString).append((dates[0].getMonth() + 1) + '/' + dates[0].getDate() + '/' + dates[0].getFullYear());
     let timeTrial = Math.round(Math.abs(((new Date().getTime()) - (dates[1]).getTime()) / (24 * 60 * 60 * 1000)));
     $('#datePubd', $htmlString).append('Last Updated ' + timeTrial + ' days ago');
-
+    console.log(articleObject['content']);
     $("#iPh").hide();
 
     listenUp();
@@ -71,6 +74,8 @@ function letsRoll(templateString, isEditDotHTML) {
         $("input[name='urlFile']").val(articleObject.pathToImg);
         //trigger urlRadio
         $("#urlRadio").click();
+    } else {
+        //$("#imgRadio").click();
     }
     $('#loadSpinner').remove();
 }
@@ -90,7 +95,7 @@ function listenUp() {
         $("input[name='urlFile']").addClass("visually-hidden");
         $("input[name='imgFile']").removeClass("visually-hidden");
         var formFile = $("#formFile");
-        if (!!formFile.val()) {
+        if (formFile.val()) {
             loadIm(formFile[0]);
         } else {
             loadIm("");
@@ -157,10 +162,12 @@ function sender(isEditDotHTML) {
         let dm = new Date();
         let formFile = $('#formFile');
         let imgMan;
-        if (formFile.val() == "") {
+        if ($('.figure-img').attr('src').substr(0, 8) == '../media') {
+            imgMan = articleObject.pathToImg;
+        } else if (formFile.val() == "") {
             imgMan = "";
         } else if (formFile[0].type == "file") {
-            imgMan = "./media/" + formFile.val().substring(12)
+            imgMan = "./media/" + formFile.val().substring(12);
         } else {
             imgMan = formFile.val();
         }
@@ -170,8 +177,8 @@ function sender(isEditDotHTML) {
         if (!isEditDotHTML) {
             articleObject['dateMade'] = dm.toJSON();
         }
-        articleObject['author'] = parseInt(urlParameters.get('u'));
-        console.log(articleObject.dateMade);
+        articleObject['author'] = window.sessionStorage.uID;
+        console.log(articleObject['author']);
 
         let sendable = true;
         let unsendable = [];
@@ -188,34 +195,31 @@ function sender(isEditDotHTML) {
             for (x in unsendable) {
                 outString += unsendable[x] + "\n";
             }
+
+            //replace with something better if the series continues
             alert(outString);
         }
 
         if (sendable) {
             //get current blob
-            $.getJSON("https://jsonblob.com/api/5df95c1f-8374-11eb-a0d4-a5d78bdc5d78/", function(data) {
+            $.getJSON("/API/articles", function(data) {
                 //push new item into article array
                 if (urlParameters.has("a")) {
                     let art = urlParameters.get("a");
-                    data.articles[art] = articleObject;
+                    data[art] = articleObject;
                 } else {
-                    data.articles.push(articleObject);
+                    data.push(articleObject);
                 }
-                console.log(data.articles);
 
                 //ajax time.
                 $.ajax({
                     type: "PUT",
-                    url: "https://jsonblob.com/api/jsonblob/5df95c1f-8374-11eb-a0d4-a5d78bdc5d78",
+                    url: "/API/articles",
                     contentType: "application/JSON",
                     data: JSON.stringify(data),
                     success: function(output, status, xhr) {
-                        console.log(xhr);
-                        console.log(xhr.getResponseHeader("Location "));
                         //modal pop up to notify of success
-                        setTimeout(() => {
-                            location = "index.html?u=" + parseInt(urlParameters.get('u'));
-                        }, 2000);
+                        window.location.href = "/admin";
                     }
                 });
             });

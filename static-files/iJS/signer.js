@@ -37,9 +37,7 @@ $(document).on('submit', '#theBlackDoor', function(e) {
         success: function(output, status, xhr) {
             console.log(output);
             if (output.role) {
-                if (output.role != 1) {
-                    window.sessionStorage.setItem('uID', output.uID);
-                }
+                window.sessionStorage.setItem('uID', output.uID);
                 signIn(output.role);
             } else {
                 $("#isValid").text("you are not worthy");
@@ -60,11 +58,9 @@ function signIn(role) {
     $("#isValid").text("welcome home");
     window.sessionStorage.setItem('role', role);
 
-    setTimeout(() => {
-        if (role == 1) {
-            window.location.href = "/admin";
-        } else {
-            window.location.href = '/';
-        }
-    }, 2000);
+    if (role == 1) {
+        window.location.href = "/admin";
+    } else {
+        window.location.href = '/';
+    }
 }

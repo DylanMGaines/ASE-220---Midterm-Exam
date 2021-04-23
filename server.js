@@ -15,11 +15,22 @@ app.use(session({ secret: 'my password' }));
 
 //placeholder setup for profile page later
 function seshCheck(req, res, next) {
-    if (req.user) {
+    if (req.session.user) {
         //if session has a user in it,  lets the user load the page
         next();
     } else {
         res.send('Be Gone, Heathen');
+        return;
+    }
+}
+
+function adminCheck(req, res, next) {
+    if (req.session.user.role) {
+        if (req.session.user.role == 1) {
+            next();
+        }
+    } else {
+        res.send('you are not worthy');
         return;
     }
 }
@@ -38,13 +49,6 @@ app.get('/article', function(req, res, next) {
     });
 });
 
-//admin page
-app.get('/admin', function(req, res, next) {
-    fs.readFile('admin/index.html', function(err, data) {
-        res.send(data.toString());
-    });
-});
-
 //returns the articles "database"
 app.get('/API/articles', function(req, res, next) {
     fs.readFile('assets/articles.json', function(err, data) {
@@ -59,17 +63,17 @@ app.put('/API/articles', function(req, res, next) {
     });
 });
 
-//overwrites user "database"
-app.put('/API/users', function(req, res, next) {
-    fs.writeFile('assets/users.json', JSON.stringify(req.body), function(err, data) {
-        res.send('done');
-    });
-});
-
 //users API -- returns users.json
 app.get('/API/users', function(req, res, next) {
     fs.readFile('assets/users.json', function(err, data) {
         res.json(JSON.parse(data.toString()));
+    });
+});
+
+//overwrites user "database"
+app.put('/API/users', function(req, res, next) {
+    fs.writeFile('assets/users.json', JSON.stringify(req.body), function(err, data) {
+        res.send('done');
     });
 });
 
@@ -122,10 +126,53 @@ app.post('/API/auth/signer', function(req, res, next) {
 
 //sign out API
 /** deletes server-side user record, responds, moves to next callback **/
-app.get('/API/auth/signOut', function(req, res, next) {
+app.get('/API/auth/signOut', seshCheck, function(req, res, next) {
     req.session.user = null;
     res.send('see ya space cowboy');
     next();
+});
+
+//I have no clue why, but this just doesn't work without the /admin
+/** deletes server-side user record, responds, moves to next callback **/
+app.get('/admin/API/auth/signOut', seshCheck, adminCheck, function(req, res, next) {
+    req.session.user = null;
+    res.send('see ya space cowboy');
+    next();
+});
+
+//admin page
+app.get('/admin', seshCheck, adminCheck, function(req, res, next) {
+    fs.readFile('admin/index.html', function(err, data) {
+        res.send(data.toString());
+    });
+});
+
+//admin edit page
+app.get('/admin/edit', seshCheck, adminCheck, function(req, res, next) {
+    fs.readFile('admin/edit.html', function(err, data) {
+        res.send(data.toString());
+    });
+});
+
+//admin edit page
+app.get('/admin/create', seshCheck, adminCheck, function(req, res, next) {
+    fs.readFile('admin/create.html', function(err, data) {
+        res.send(data.toString());
+    });
+});
+
+//gets template for admin-side card
+app.get('/API/admin/templates/card', seshCheck, adminCheck, function(req, res, next) {
+    fs.readFile('admin/assets/templates.json', function(err, data) {
+        res.json(JSON.parse(data.toString())["card"]);
+    });
+});
+
+//gets template for admin-side card
+app.get('/API/admin/templates/article', seshCheck, adminCheck, function(req, res, next) {
+    fs.readFile('admin/assets/templates.json', function(err, data) {
+        res.json(JSON.parse(data.toString())["article"]);
+    });
 });
 
 app.listen(port);

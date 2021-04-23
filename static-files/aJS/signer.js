@@ -4,7 +4,10 @@ function signTime() {
         oCount++;
         if (oCount >= 3) {
             oCount = 0;
-            loader('o');
+            $.get('API/auth/signOut', function() {
+                window.sessionStorage.clear();
+                window.location.href = '/';
+            });
         }
     });
 }

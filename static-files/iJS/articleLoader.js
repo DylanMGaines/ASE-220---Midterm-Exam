@@ -40,7 +40,6 @@ function letsRoll(articleInfo, aNum, templateString) {
     //to be handled on session implementations
     if (window.sessionStorage.role) {
         $.getJSON('API/users', function(seshData) {
-            console.log(seshData[window.sessionStorage.uID].liked);
             if (seshData[window.sessionStorage.uID].liked.includes(aNum)) {
                 $('.bi-hand-thumbs-up', $htmlString).toggleClass("active");
             }
@@ -70,29 +69,41 @@ function letsRoll(articleInfo, aNum, templateString) {
 //TODO
 function smash(whichOne) {
     let theOne = (whichOne == 'B') ? $("#thatLikeButtonB") : $("#thatLikeButtonT");
-    if (urlParameters.has("un")) {
+    if (window.sessionStorage.role) {
         let theOther = (whichOne == 'T') ? $("#thatLikeButtonB") : $("#thatLikeButtonT");
         $.getJSON("API/articles", function(articleInfo) {
             $.getJSON("API/users", function(userInfo) {
                 let aNum = urlParameters.get("a");
                 let uNum = window.sessionStorage.uID;
+                console.log(articleInfo[aNum]);
+                console.log(userInfo[uNum]);
+
                 if (theOne.hasClass('active') == true) {
                     articleInfo[aNum].likes++;
-                    articleInfo[uNum].liked.push(aNum);
+                    userInfo[uNum].liked.push(aNum);
                 } else if (theOne.hasClass('active') == false) {
                     articleInfo[aNum].likes--;
-                    articleInfo[uNum].liked.splice(articleInfo[uNum].liked.indexOf(aNum), 1);
+                    userInfo[uNum].liked.splice(userInfo[uNum].liked.indexOf(aNum), 1);
                 }
                 $.ajax({
                     type: "PUT",
                     url: "API/articles",
                     contentType: "application/JSON",
-                    articleInfo: JSON.stringify(articleInfo),
+                    data: JSON.stringify(articleInfo),
                     success: function(output, status, xhr) {
                         theOther.toggleClass("active");
-                        $('.counter').text(articleInfo.articles[aNum].likes);
+                        $('.counter').text(articleInfo[aNum].likes);
                         theOne.blur();
                         theOther.blur();
+                    }
+                });
+                $.ajax({
+                    type: "PUT",
+                    url: "API/users",
+                    contentType: "application/JSON",
+                    data: JSON.stringify(userInfo),
+                    success: function(output, status, xhr) {
+                        console.log('work');
                     }
                 });
             });
