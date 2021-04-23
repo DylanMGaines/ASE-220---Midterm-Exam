@@ -3,7 +3,6 @@ const bitsNPieces = ['.card-title', '.card-text', '.text-muted']; //title, subti
 let urlParameters = new URLSearchParams(window.location.search);
 
 function cardLoader(data, accessing, templateString) {
-    console.log(accessing);
     let $htmlString = $(templateString).clone(true);
     $htmlString = $htmlString[0];
     let accessed = data[accessing];
@@ -23,6 +22,7 @@ function cardLoader(data, accessing, templateString) {
 }
 
 function placehold() {
+    //console.log(window.sessionStorage);
     let currentLoaded;
     $.getJSON("API/articles", function(data) {
         //initial load (loads 6)

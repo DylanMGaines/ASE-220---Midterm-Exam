@@ -1,17 +1,21 @@
 [{
         "uID": 0,
         "nameTag": "dylan",
+        "fName": "Dylan",
+        "lName": "Gaines",
         "email": "placeholder@ph.place",
         "password": "pw",
-        "admin": true,
+        "role": 1,
         "liked": []
     },
     {
         "uID": 1,
         "nameTag": "andy",
+        "fName": "Andy",
+        "lName": "Andy",
         "email": "placeholder@ph.place",
         "password": "pw",
-        "admin": false,
+        "role": 2,
         "liked": [
             "3"
         ]

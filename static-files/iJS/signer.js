@@ -1,10 +1,14 @@
 function signInSetUp() {
-    let urlParameters = new URLSearchParams(window.location.search);
-    if (urlParameters.has("un")) {
+    if (window.sessionStorage.uID) {
         $("#sign").attr("id", "signOut");
         $("#signOut").append(" Out");
         $("#signOut").click(function() {
-            location.href = "./index.html";
+            /*url, callback*/
+            $.get('API/auth/signOut', function() {
+                window.sessionStorage.clear();
+                console.log(window.sessionStorage);
+                window.location.href = '/';
+            });
         });
         $("#signInFoot").hide();
     } else {
@@ -12,52 +16,55 @@ function signInSetUp() {
         $("#signIn").attr("data-bs-toggle", "modal");
         $("#signIn").attr("data-bs-target", "#signinmodal");
         $("#signIn").append(" In");
-        $.getJSON("./assets/modals.json", function(modals) {
+        $.getJSON("API/templates/modal", function(modals) {
             $(".bg-body").append(modals.signInModal);
-            $('.form-control').keyup(function(event) {
-                let keyBoi = (!!event.keyCode) ? event.keyCode : event.which;
-                if (keyBoi == 13) {
-                    subIt();
-                }
-            });
         });
     }
 }
 
-function subIt() {
-    let un, pw, admin;
-    un = $("#player").val().trim();
-    pw = $("#key").val().trim();
-    let valid = false;
-    $.getJSON("https://jsonblob.com/api/5df95c1f-8374-11eb-a0d4-a5d78bdc5d78/", function(data) {
-        for (uID in data.users) {
-            if (un == data.users[uID].nameTag) {
-                //nested so password is only checked if username is valid
-                if (pw = data.users[uID].password) {
-                    admin = data.users[uID].admin;
-                    signIn(data.users[uID], admin);
-                    valid = true;
-                    break;
+$(document).on('submit', '#theBlackDoor', function(e) {
+    e.preventDefault();
+    let f = $(this);
+    let formData = {
+        nameTag: f[0][0].value,
+        password: f[0][1].value
+    }
+    $.ajax({
+        type: 'POST',
+        url: '/API/auth/signer',
+        contentType: 'application/json',
+        data: JSON.stringify(formData),
+        success: function(output, status, xhr) {
+            console.log(output);
+            if (output.role) {
+                if (output.role != 1) {
+                    window.sessionStorage.setItem('uID', output.uID);
                 }
+                signIn(output.role);
+            } else {
+                $("#isValid").text("you are not worthy");
             }
-        }
-        if (!valid) {
-            $("#isValid").text("you are not worthy");
+        },
+        error: function(output, status, xhr) {
+            console.log('L');
+            console.log(output);
+            console.log(status);
         }
     });
-}
+});
 
-function signIn(user, admin) {
+function signIn(role) {
     $("#theBlackDoor").toggle();
     $("#loader").attr("hidden", false);
     $("#modalMan").addClass("theHandPrint");
     $("#isValid").text("welcome home");
+    window.sessionStorage.setItem('role', role);
 
     setTimeout(() => {
-        if (admin) {
-            location = "admin/index.html?u=" + user.uID;
+        if (role == 1) {
+            window.location.href = "/admin";
         } else {
-            location = "index.html?un=" + user.uID;
+            window.location.href = '/';
         }
     }, 2000);
 }

@@ -35,16 +35,17 @@ function letsRoll(articleInfo, aNum, templateString) {
     let arItem = articleInfo[aNum];
     let $htmlString = $(templateString).clone(true);
     $htmlString = $htmlString[0];
+    console.log(window.sessionStorage.role);
 
-    /*
     //to be handled on session implementations
-    if (urlParameters.has("un")) {
-        if (articleInfo.users[urlParameters.get("un")].liked.includes(aNum)) {
-            $('.bi-hand-thumbs-up', $htmlString).toggleClass("active");
-        }
-
-        $(".homeLink").attr("href", "index.html?un=" + urlParameters.get("un"));
-    }*/
+    if (window.sessionStorage.role) {
+        $.getJSON('API/users', function(seshData) {
+            console.log(seshData[window.sessionStorage.uID].liked);
+            if (seshData[window.sessionStorage.uID].liked.includes(aNum)) {
+                $('.bi-hand-thumbs-up', $htmlString).toggleClass("active");
+            }
+        });
+    }
 
     toast = new bootstrap.Toast($('.toast')[0], 3000);
 
@@ -71,27 +72,29 @@ function smash(whichOne) {
     let theOne = (whichOne == 'B') ? $("#thatLikeButtonB") : $("#thatLikeButtonT");
     if (urlParameters.has("un")) {
         let theOther = (whichOne == 'T') ? $("#thatLikeButtonB") : $("#thatLikeButtonT");
-        $.getJSON("https://jsonblob.com/api/5df95c1f-8374-11eb-a0d4-a5d78bdc5d78/", function(articleInfo) {
-            let aNum = urlParameters.get("a");
-            let uNum = urlParameters.get("un");
-            if (theOne.hasClass('active') == true) {
-                articleInfo.articles[aNum].likes++;
-                articleInfo.users[uNum].liked.push(aNum);
-            } else if (theOne.hasClass('active') == false) {
-                articleInfo.articles[aNum].likes--;
-                articleInfo.users[uNum].liked.splice(articleInfo.users[uNum].liked.indexOf(aNum), 1);
-            }
-            $.ajax({
-                type: "PUT",
-                url: "https://jsonblob.com/api/jsonblob/5df95c1f-8374-11eb-a0d4-a5d78bdc5d78",
-                contentType: "application/JSON",
-                articleInfo: JSON.stringify(articleInfo),
-                success: function(output, status, xhr) {
-                    theOther.toggleClass("active");
-                    $('.counter').text(articleInfo.articles[aNum].likes);
-                    theOne.blur();
-                    theOther.blur();
+        $.getJSON("API/articles", function(articleInfo) {
+            $.getJSON("API/users", function(userInfo) {
+                let aNum = urlParameters.get("a");
+                let uNum = window.sessionStorage.uID;
+                if (theOne.hasClass('active') == true) {
+                    articleInfo[aNum].likes++;
+                    articleInfo[uNum].liked.push(aNum);
+                } else if (theOne.hasClass('active') == false) {
+                    articleInfo[aNum].likes--;
+                    articleInfo[uNum].liked.splice(articleInfo[uNum].liked.indexOf(aNum), 1);
                 }
+                $.ajax({
+                    type: "PUT",
+                    url: "API/articles",
+                    contentType: "application/JSON",
+                    articleInfo: JSON.stringify(articleInfo),
+                    success: function(output, status, xhr) {
+                        theOther.toggleClass("active");
+                        $('.counter').text(articleInfo.articles[aNum].likes);
+                        theOne.blur();
+                        theOther.blur();
+                    }
+                });
             });
         });
     } else {

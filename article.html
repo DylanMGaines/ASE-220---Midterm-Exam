@@ -23,7 +23,7 @@
     <script>
         $(document).ready(function() {
             letsRock();
-            //signInSetUp();
+            signInSetUp();
         });
     </script>
 </head>
@@ -31,9 +31,9 @@
 <body class="bg-body">
     <nav class="navbar navbar-dark bg-dark text-white container-fluid position-fixed m-0 primary-nav d-flex" style="z-index: 500; top: 0%;">
         <div class="flex-row container-fluid">
-            <a href="index.html" class="link-light text-decoration-none homeLink"><i
+            <a href="/" class="link-light text-decoration-none"><i
                     class="py-1 bi-journal-code m-0 flex-fill"></i></a>
-            <a href="index.html" class="link-light flex-fill text-decoration-none homeLink">
+            <a href="/" class="link-light flex-fill text-decoration-none">
                 <div class="title py-2 display-4 text-st ps-sm-3 h-100 d-none d-md-block">
                     Tryhard blog
                 </div>
@@ -45,7 +45,7 @@
             </div>
             <div class="collapse navbar-collapse bg-transparent" id="navbarNavDarkDropdown">
                 <ul class="navbar-nav mb-2 d-inline-block container-fluid">
-                    <a href="index.html" class="text-decoration-none link-light homeLink">
+                    <a href="/" class="text-decoration-none link-light">
                         <li class="nav-link ps-3">
                             Home
                         </li>
@@ -88,14 +88,12 @@
                 Links
             </li>
             <li class="ps-3">
-                <a href="index.html" class="link-secondary homeLink">
+                <a href="/" class="link-secondary">
                     Home
                 </a>
             </li>
-            <li class="ps-3" id="signInFoot">
-                <a href="index.html" class="link-secondary" data-bs-toggle="modal" data-bs-target="#signinmodal">
-                    Sign-in
-                </a>
+            <li class="ps-3 text-decoration-underline link-secondary" id="signInFoot" data-bs-toggle="modal" data-bs-target="#signinmodal" style="cursor: pointer;">
+                Sign-In
             </li>
             <li class="ps-3 link-secondary text-decoration-underline" id="contact">
                 Contact
