@@ -1,7 +1,7 @@
 let fs = require('fs');
 let path = require('path');
-let axios = require('axios'); //currently unused
 let express = require('express');
+let bcrypt = require('bcrypt');
 let bodyParser = require('body-parser');
 let session = require('express-session');
 let port = 1337;
@@ -157,6 +157,13 @@ app.get('/admin/edit', seshCheck, adminCheck, function(req, res, next) {
 //admin edit page
 app.get('/admin/create', seshCheck, adminCheck, function(req, res, next) {
     fs.readFile('admin/create.html', function(err, data) {
+        res.send(data.toString());
+    });
+});
+
+//admin users page
+app.get('/admin/users', seshCheck, adminCheck, function(req, res, next) {
+    fs.readFile('admin/users.html', function(err, data) {
         res.send(data.toString());
     });
 });
