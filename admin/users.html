@@ -20,11 +20,36 @@
     <link href="../aCSS/adminVibe.css" rel="stylesheet">
     <script src="../iJS/shrinker.js"></script>
     <script src="../aJS/signer.js"></script>
+    <script src="../aJS/userLoader.js"></script>
     <script>
         $(document).ready(function() {
-
+            signTime();
+            lockIt();
         });
     </script>
+
+    <style>
+        #saveButton {
+            right: 5%;
+            bottom: 5%;
+            width: 3rem;
+            height: 3rem;
+            transition: all 0.25s ease-in-out;
+            -webkit-transition: all 0.25s ease-in-out;
+            -moz-transition: all 0.25s ease-in-out;
+        }
+        
+        #saveButton:hover {
+            width: 7rem;
+            transition: all 0.25s ease-in-out;
+            -webkit-transition: all 0.25s ease-in-out;
+            -moz-transition: all 0.25s ease-in-out;
+        }
+        
+        #saveButton:hover::after {
+            content: "Save";
+        }
+    </style>
     <noscript>Sorry, your browser does not support JavaScript!</noscript>
 </head>
 
@@ -80,7 +105,7 @@
                 </div>
                 <hr class='mb-2 mt-1'>
                 <div class='card-body'>
-                    <table class="table table-hover">
+                    <table class="table table-hover table-striped">
                         <thead>
                             <tr>
                                 <th scope="col">ID</th>
@@ -92,26 +117,40 @@
                                 <th scope="col">Likes</th>
                             </tr>
                         </thead>
-                        <tbody>
-                            <tr id="insertionPoint">
-                                <th scope="row" id="uID">4</th>
-                                <td id="fName">Jacob</td>
-                                <td id="lName">Thornton</td>
-                                <td id="uName">@fat</td>
-                                <td id="email">@fat</td>
-                                <td id="role">@fat</td>
-                                <td id="likes">@fat</td>
+                        <tbody id="dropZone">
+                            <tr id="insPoint" class="visually-hidden">
+                                <th scope="row" id="uID"></th>
+                                <td id="fName"></td>
+                                <td id="lName"></td>
+                                <td id="nameTag"></td>
+                                <td id="email"></td>
+                                <td id="role"></td>
+                                <td id="liked"></td>
                             </tr>
                         </tbody>
                     </table>
+                    <hr>
+                    <div id="formDrop">
+                    </div>
+                    <!--
+                    <form>
+                        <div class="form-floating mb-3">
+                            <input type="email" class="form-control" id="floatingInput" placeholder="name@example.com">
+                            <label for="floatingInput">Email address</label>
+                        </div>
+                        <div class="form-floating">
+                            <input type="password" class="form-control" id="floatingPassword" placeholder="Password">
+                            <label for="floatingPassword">Password</label>
+                        </div>
+                    </form>
+                    -->
                 </div>
-                <div class='row align-self-end me-3'>
-                </div>
-                <hr>
             </div>
         </div>
     </main>
-
+    <button class="btn-outline-dark rounded-pill text-center text-nowrap 
+    position-fixed rounded-circle ratio-1x1 bi-upload fs-5 overflow-hidden" id="saveButton">
+    </button>
     <!--footer-->
     <footer class="container-fluid pt-5 pb-3 bg-dark text-muted">
         <ul class="d-inline-block container-fluid list-unstyled list-group-flush">

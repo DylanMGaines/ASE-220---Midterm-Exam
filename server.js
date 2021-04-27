@@ -70,6 +70,13 @@ app.get('/API/users', function(req, res, next) {
     });
 });
 
+//users API -- returns users.json
+app.get('/admin/API/users', function(req, res, next) {
+    fs.readFile('assets/users.json', function(err, data) {
+        res.json(JSON.parse(data.toString()));
+    });
+});
+
 //overwrites user "database"
 app.put('/API/users', function(req, res, next) {
     fs.writeFile('assets/users.json', JSON.stringify(req.body), function(err, data) {
