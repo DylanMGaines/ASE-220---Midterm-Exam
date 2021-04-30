@@ -1,12 +1,12 @@
 function signInSetUp() {
     if (window.sessionStorage.uID) {
+        console.log(window.sessionStorage);
         $("#sign").attr("id", "signOut");
         $("#signOut").append(" Out");
         $("#signOut").click(function() {
             /*url, callback*/
             $.get('API/auth/signOut', function() {
                 window.sessionStorage.clear();
-                console.log(window.sessionStorage);
                 window.location.href = '/';
             });
         });

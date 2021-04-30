@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Editing:</title>
+    <title>The NSA</title>
 
     <!--bootstrap css and icons-->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BmbxuPwQa2lc/FVzBcNJ7UAyJxM6wuqIj61tLrc4wSX0szH/Ev+nYRRuWlolflfl" crossorigin="anonymous">
@@ -49,6 +49,18 @@
         #saveButton:hover::after {
             content: "Save";
         }
+        
+        #peeker:hover {
+            transition: all 0.25s ease-in-out;
+            -webkit-transition: all 0.25s ease-in-out;
+            -moz-transition: all 0.25s ease-in-out;
+        }
+        
+        #peeker {
+            transition: all 0.25s ease-in-out;
+            -webkit-transition: all 0.25s ease-in-out;
+            -moz-transition: all 0.25s ease-in-out;
+        }
     </style>
     <noscript>Sorry, your browser does not support JavaScript!</noscript>
 </head>
@@ -86,14 +98,13 @@
     </nav>
 
     <main>
-        <!--
         <div class="position-fixed align-baseline bg-light rounded-2 align-middle p-4" style="z-index: 600; top: 40%; left: 45%;" id="loadSpinner">
             <div class="spinner-border text-dark">
             </div>
-        </div>-->
+        </div>
         <!--overarching placeholder class-->
         <div class="ph mt-5 pt-3">
-            <div class='card m-md-4 p-3'>
+            <div class='card mt-3 p-0 p-md-3'>
                 <div col='d-flex'>
                     <div class='flex-row'>
                         <div class='col-10 flex-column ms-3 float-start'>
@@ -105,52 +116,87 @@
                 </div>
                 <hr class='mb-2 mt-1'>
                 <div class='card-body'>
-                    <table class="table table-hover table-striped">
-                        <thead>
-                            <tr>
-                                <th scope="col">ID</th>
-                                <th scope="col">First</th>
-                                <th scope="col">Last</th>
-                                <th scope="col">UserName</th>
-                                <th scope="col">Email</th>
-                                <th scope="col">Role</th>
-                                <th scope="col">Likes</th>
-                            </tr>
-                        </thead>
-                        <tbody id="dropZone">
-                            <tr id="insPoint" class="visually-hidden">
-                                <th scope="row" id="uID"></th>
-                                <td id="fName"></td>
-                                <td id="lName"></td>
-                                <td id="nameTag"></td>
-                                <td id="email"></td>
-                                <td id="role"></td>
-                                <td id="liked"></td>
-                            </tr>
-                        </tbody>
-                    </table>
+                    <div class="container-fluid table-responsive" id="tableHolder">
+                        <table class="table table-hover table-striped">
+                            <thead>
+                                <tr>
+                                    <th scope="col">ID</th>
+                                    <th scope="col">First</th>
+                                    <th scope="col">Last</th>
+                                    <th scope="col">UserName</th>
+                                    <th scope="col">Email</th>
+                                    <th scope="col">Role</th>
+                                    <th scope="col">Likes</th>
+                                </tr>
+                            </thead>
+                            <tbody id="dropZone">
+                                <!--on click load into form-->
+                                <tr id="insPoint" class="visually-hidden" style="cursor: pointer;">
+                                    <th scope="row" id="uID"></th>
+                                    <td id="fName"></td>
+                                    <td id="lName"></td>
+                                    <td id="nameTag"></td>
+                                    <td id="email"></td>
+                                    <td id="role"></td>
+                                    <!--this is problematic if a user likes too many things, but time is of the essence, so L-->
+                                    <td id="liked"></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
                     <hr>
+                    <h4>Data Entry</h4>
                     <div id="formDrop">
                     </div>
-                    <!--
-                    <form>
-                        <div class="form-floating mb-3">
-                            <input type="email" class="form-control" id="floatingInput" placeholder="name@example.com">
-                            <label for="floatingInput">Email address</label>
+                    <form id="theForm">
+                        <div class="d-flex flex-column">
+                            <div class="input-group">
+                                <div class="form-floating mb-3 me-2" style="width: 7rem;">
+                                    <input type="text" class="form-control" id="fuID" placeholder="userName">
+                                    <label for="floatingInput">User ID</label>
+                                </div>
+                                <div class="form-floating mb-3 me-2" style="width: 5rem;">
+                                    <input type="text" class="form-control" id="frole" placeholder="userName">
+                                    <label for="floatingInput">Role</label>
+                                </div>
+                                <div class="form-floating mb-3 me-2">
+                                    <input type="text" class="form-control" id="ffName" placeholder="name@example.com">
+                                    <label for="floatingInput">First Name</label>
+                                </div>
+                                <div class="form-floating mb-3 me-2">
+                                    <input type="text" class="form-control" id="flName" placeholder="name@example.com">
+                                    <label for="floatingInput">Last Name</label>
+                                </div>
+                            </div>
+                            <div class="input-group">
+                                <div class="form-floating mb-3 me-2">
+                                    <input type="text" class="form-control" id="fnameTag" placeholder="userName">
+                                    <label for="floatingInput">Username</label>
+                                </div>
+                                <div class="form-floating mb-3 me-2">
+                                    <input type="email" class="form-control" id="femail" placeholder="name@example.com">
+                                    <label for="floatingInput">E-Mail</label>
+                                </div>
+                            </div>
+                            <div class="input-group row-cols-2 row-cols-lg-auto">
+                                <div class="col-10 form-floating mb-3" id="pwHolder">
+                                    <input type="password" class="form-control pe-5" id="fpassword" placeholder="Password">
+                                    <label for="fPassword">Password</label>
+                                </div>
+                                <span class="col-1 mb-3 pe-4 align-self-center bi-eye-fill fs-4 position-relative link-secondary" id="peeker" style="z-index: 100; right:2.1rem; cursor: pointer;"></span>
+                            </div>
                         </div>
-                        <div class="form-floating">
-                            <input type="password" class="form-control" id="floatingPassword" placeholder="Password">
-                            <label for="floatingPassword">Password</label>
+                        <div class="d-flex">
+                            <button type="submit" class="btn-outline-dark rounded-pill text-center text-nowrap position-fixed rounded-circle ratio-1x1 bi-upload fs-5 overflow-hidden" id="saveButton">  </button>
+                            <button type="reset" class="btn btn-outline-dark mx-1">Wipe Form</button>
+                            <button type="button" class="btn btn-outline-dark mx-1" id="newB">New User</button>
+                            <button type="button" class="btn btn-outline-dark mx-1" id="newA">New Admin</button>
                         </div>
                     </form>
-                    -->
                 </div>
             </div>
         </div>
     </main>
-    <button class="btn-outline-dark rounded-pill text-center text-nowrap 
-    position-fixed rounded-circle ratio-1x1 bi-upload fs-5 overflow-hidden" id="saveButton">
-    </button>
     <!--footer-->
     <footer class="container-fluid pt-5 pb-3 bg-dark text-muted">
         <ul class="d-inline-block container-fluid list-unstyled list-group-flush">

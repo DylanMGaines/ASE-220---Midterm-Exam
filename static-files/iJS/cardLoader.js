@@ -2,8 +2,8 @@
 const bitsNPieces = ['.card-title', '.card-text', '.text-muted']; //title, subtitle, date updated
 let urlParameters = new URLSearchParams(window.location.search);
 
-function cardLoader(data, accessing, templateString) {
-    let $htmlString = $(templateString).clone(true);
+function cardLoader(data, accessing, cardString) {
+    let $htmlString = $(cardString).clone(true);
     $htmlString = $htmlString[0];
     let accessed = data[accessing];
     var i = 0;
@@ -26,9 +26,9 @@ function placehold() {
     let currentLoaded;
     $.getJSON("API/articles", function(data) {
         //initial load (loads 6)
-        $.getJSON("API/templates/card", function(template) {
+        $.getJSON("API/templates/card", function(card) {
             for (currentLoaded = 0; currentLoaded < data.length && currentLoaded < 6; currentLoaded++) {
-                cardLoader(data, (data.length - (currentLoaded + 1)), template);
+                cardLoader(data, (data.length - (currentLoaded + 1)), card);
             }
             //load button clicked (loads 6 more)
             $("#loadButton").click(function() {
