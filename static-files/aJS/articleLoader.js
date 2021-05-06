@@ -39,6 +39,7 @@ function letsRock() {
             }
             letsRoll(template, isEditDotHTML);
             sender(isEditDotHTML);
+            trashMan(isEditDotHTML);
             $('#published')[0].value = 'T';
             $('#published').on('click', function() {
                 this.value = ($('#published')[0].value == 'T') ? 'F' : 'T';
@@ -160,6 +161,31 @@ function loadIm(inputMan) {
 function hideIt(toHide) {
     $(toHide).show();
     return "#newImg";
+}
+let tCount = 0;
+
+function trashMan(isEditDotHTML) {
+    $("#trash").click(function() {
+        if (!isEditDotHTML) {
+            window.location.href = (window.sessionStorage.role == 1) ? "/admin" : "/";
+        } else if (isEditDotHTML) {
+            if (tCount++ > 3) {
+                console.log(articleObject);
+                /*$.ajax({
+                    type: "DELETE",
+                    url: "API/articles",
+                    contentType: 'application/json',
+                    data: JSON.stringify(response),
+                    success: function(output, stat, reqData) {
+                        console.log(output);
+                        console.log(stat);
+                        console.log(reqData);
+                        window.location.reload();
+                    }
+                });*/
+            }
+        }
+    });
 }
 
 function sender(isEditDotHTML) {
