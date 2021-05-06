@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Home</title>
+
+    <!--bootstrap css and icons-->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BmbxuPwQa2lc/FVzBcNJ7UAyJxM6wuqIj61tLrc4wSX0szH/Ev+nYRRuWlolflfl" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.0/font/bootstrap-icons.css">
+    <link rel="icon" href="media/journal-code.png">
+
+    <!--bootstrap js/popper (bundled)-->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/js/bootstrap.bundle.min.js" integrity="sha384-b5kHyXgcpbZJO/tY9Ul7kGkf1S0CWuKcCD38l8YkeH8z8QjE0GmW1gYU5S9FOnJ0" crossorigin="anonymous">
+    </script>
+
+    <!--May setup API's for these?-->
+    <script src="resources/jquery-3.6.0.min.js"></script>
+    <script src="./iJS/registrar.js"></script>
+    <link href="iCSS/theVibe.css" rel="stylesheet">
+    <script>
+        $(document).ready(function() {
+            opener();
+        })
+    </script>
+    <style>
+
+    </style>
+</head>
+
+
+<body class="bg-body">
+    <nav class="navbar navbar-brand text-dark container-fluid m-0 primary-nav d-flex" style="z-index: 500; top: 0%;">
+        <div class="flex-row container-fluid">
+            <a href="/" class="link-dark text-decoration-none"><i
+                    class="py-1 bi-journal-code m-0 flex-fill"></i></a>
+            <a href="/" class="link-dark flex-fill text-decoration-none">
+                <div class="title py-2 display-4 text-st ps-sm-3 h-100 d-none d-md-block">
+                    Tryhard blog
+                </div>
+            </a>
+        </div>
+    </nav>
+    <hr class="p-0 m-0">
+    <main>
+        <div class="position-fixed align-baseline bg-light rounded-2 align-middle p-4" style="z-index: 600; top: 40%; left: 45%;" id="loadSpinner">
+            <div class="spinner-border text-dark">
+            </div>
+        </div>
+        <!--overarching placeholder class-->
+        <div class="ph mt-4">
+            <!--card holding container class (the deck, if you will)-->
+            <div class="container-md m-1 p-0 m-lg-4 p-lg-3 w-75">
+                <div class="row row-cols-1 row-cols-md-2 g-3">
+                    <!--card holding tag is a to make entire card a clickable link-->
+                    <div class="container ps-3" id="testHolder">
+                        <h4 class="h4">Register as a New User</h4>
+                        <hr>
+                        <form id="theForm">
+                            <div class="d-flex flex-column">
+                                <div class="input-group row-cols-lg-2 row-cols-1">
+                                    <div class="col">
+                                        <div class="form-floating mb-3 me-2">
+                                            <input type="text" class="form-control" id="ffName" placeholder="name@example.com">
+                                            <label for="floatingInput">First Name</label>
+                                            <span id="fNameComms"></span>
+                                        </div>
+                                    </div>
+                                    <div class="col">
+                                        <div class="form-floating me-2 mb-3">
+                                            <input type="text" class="form-control" id="flName" placeholder="name@example.com">
+                                            <label for="floatingInput">Last Name</label>
+                                            <span id="lNameComms"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="input-group">
+                                    <div class="form-floating mb-3 me-2 w-100">
+                                        <input type="text" class="form-control" id="fnameTag" placeholder="userName">
+                                        <label for="floatingInput">Username</label>
+                                        <span id="uNameComms"></span>
+                                    </div>
+                                    <div class="form-floating mb-3 me-2 w-100">
+                                        <input type="text" class="form-control" id="femail" placeholder="name@example.com">
+                                        <label for="floatingInput">E-Mail</label>
+                                        <span id="emailComms"></span>
+                                    </div>
+                                </div>
+                                <div class="p-3 mb-2">
+                                    Password must be at least 8 characters long and have at least one uppercase letter, one lowercase letter, one number, and one special character (#?!@$ %^&*-)
+                                </div>
+                                <div class="input-group row-cols-2 row-cols-lg-auto">
+                                    <div class="col-10 form-floating mb-3" id="pwHolder">
+                                        <input type="password" class="form-control pe-5" id="fpassword" placeholder="Password">
+                                        <label for="fPassword">Password</label>
+                                        <span class="text-danger" id="pwComms"></span>
+                                    </div>
+                                    <span class="col-1 mb-3 pe-4 align-self-center bi-eye-fill fs-4 position-relative link-secondary" id="peeker" style="z-index: 100; left:0.75rem; cursor: pointer;"></span>
+                                    <div class="col-10 form-floating mb-3" id="confirmPW">
+                                        <input type="password" class="form-control pe-5" id="fconfirm" placeholder="Confirm Password">
+                                        <label for="fconfirm">Confirm Password</label>
+                                        <span class="text-danger" id="confirmComms"></span>
+                                    </div>
+                                    <span class="col-1 mb-3 pe-4 align-self-center bi-eye-fill fs-4 position-relative link-secondary" id="peekerc" style="z-index: 100; left:0.75rem; cursor: pointer;"></span>
+                                </div>
+                            </div>
+                            <hr>
+                            <div class="d-flex">
+                                <button type="reset" class="btn btn-outline-dark mx-1">Wipe Form</button>
+                                <button type="submit" class="btn btn-dark mx-1">Submit</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!--footer-->
+    <footer class="container-fluid pt-5 pb-3 bg-body text-muted">
+        <ul class="d-inline-block container-fluid list-unstyled list-group-flush">
+            <li class="h5 m-0">
+                Links
+            </li>
+            <li class="ps-3">
+                <a href="/" class="link-dark">
+                    Home
+                </a>
+            </li>
+            <li class="ps-3 text-decoration-underline link-dark" id="signInFoot" data-bs-toggle="modal" data-bs-target="#signinmodal" style="cursor: pointer;">
+                Sign-In
+            </li>
+            <li class="ps-3 link-dark text-decoration-underline" id="contact">
+                Contact
+            </li>
+        </ul>
+    </footer>
+</body>
+
+</html>

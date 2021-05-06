@@ -16,6 +16,7 @@ app.use(session({ secret: 'wow' }));
 
 function redirector(res) {
     fs.readFile('redirect.html', function(err, data) {
+        res.status(307);
         res.send(data.toString());
     });
 }
@@ -26,9 +27,7 @@ function seshCheck(req, res, next) {
         //if session has a user in it, lets the user load the page
         next();
     } else {
-        console.log(next);
         redirector(res);
-        console.log("redirected");
     }
 }
 
@@ -44,6 +43,14 @@ function adminCheck(req, res, next) {
     }
 }
 
+function updateID(parsed) {
+    let i = 0;
+    for (user in parsed) {
+        parsed[user].uID = i++;
+    }
+    return parsed;
+}
+
 //main page
 app.get('/', function(req, res, next) {
     fs.readFile('index.html', function(err, data) {
@@ -56,6 +63,71 @@ app.get('/', function(req, res, next) {
 app.get('/article', function(req, res, next) {
     fs.readFile('article.html', function(err, data) {
         res.send(data.toString());
+    });
+});
+
+//new user
+app.get('/newUser', function(req, res, next) {
+    fs.readFile('register.html', function(err, data) {
+        res.send(data.toString());
+    });
+});
+
+//check if username is taken
+app.post('/API/check', function(req, res, next) {
+    if (req.body.type) {
+        fs.readFile('assets/users.json', function(err, data) {
+            let parsed = JSON.parse(data.toString());
+            let found = false;
+            if (req.body.type == 'Username') {
+                for (let i = 0; i < parsed.length; i++) {
+                    if (parsed[i].nameTag == req.body.dayda) {
+                        found = true;
+                        break;
+                    }
+                }
+            } else if (req.body.type == 'Email') {
+                for (let i = 0; i < parsed.length; i++) {
+                    if (parsed[i].email == req.body.dayda) {
+                        found = true;
+                        break;
+                    }
+                }
+            }
+            res.status(202);
+            res.send(found);
+            console.log("email works");
+        });
+    } else {
+        console.log('ruh roh check no work');
+        console.log(req.body);
+    }
+});
+
+//pushes new user info from signup thing
+app.put('/API/news', function(req, res, next) {
+    for (thing in req.body) {
+        if (thing == "liked" || thing == "role" || thing == "uID") {
+            continue;
+        }
+        if (req.body[thing] == '') {
+            res.status(406);
+            res.send(thing);
+            return;
+        }
+    }
+
+    fs.readFile('assets/users.json', function(err, data) {
+        let parsed = JSON.parse(data.toString());
+        console.log("parsed");
+        req.body.uID = parsed.length;
+        req.body.role = 2;
+        req.body.password = bcrypt.hashSync(req.body.password, 10);
+        parsed.push(req.body);
+        fs.writeFile('assets/users.json', JSON.stringify(parsed), function(err, data) {
+            res.status(201);
+            res.send("user updated");
+        });
     });
 });
 
@@ -75,13 +147,6 @@ app.put('/API/articles', function(req, res, next) {
 
 //users API -- returns users.json
 app.get('/API/users', function(req, res, next) {
-    fs.readFile('assets/users.json', function(err, data) {
-        res.json(JSON.parse(data.toString()));
-    });
-});
-
-//users API -- returns users.json
-app.get('/admin/API/users', function(req, res, next) {
     fs.readFile('assets/users.json', function(err, data) {
         res.json(JSON.parse(data.toString()));
     });
@@ -125,7 +190,7 @@ app.post('/API/auth/signer', function(req, res, next) {
         let users = JSON.parse(data.toString());
         for (let i = 0; i < users.length; i++) {
             if (users[i].nameTag == req.body.nameTag || users[i].email == req.body.nameTag) {
-                if (bcrypt.compareSync(req.body.password, users[i].password) || req.body.password == users[i].password) {
+                if (bcrypt.compareSync(req.body.password, users[i].password)) {
                     //user found in db
                     req.session.user = {
                         ID: i,
@@ -187,26 +252,25 @@ app.get('/admin/users', seshCheck, adminCheck, function(req, res, next) {
     });
 });
 
+//users API -- returns users.json
+app.get('/admin/API/users', function(req, res, next) {
+    fs.readFile('assets/users.json', function(err, data) {
+        res.json(JSON.parse(data.toString()));
+    });
+});
+
 //gets template for admin-side card
 app.post('/admin/API/users', seshCheck, adminCheck, function(req, res, next) {
-    console.log('caught');
     fs.readFile('assets/users.json', function(err, data) {
-        console.log(req.body);
-        console.log(data.toString());
-        console.log('\n\n');
         let theGoods = JSON.parse(data.toString());
         req.body.uID = parseInt(req.body.uID);
         req.body.role = parseInt(req.body.role);
         req.body.password = bcrypt.hashSync(req.body.password, 10);
-
-        if (!(theGoods[req.body.uID]) && !(theGoods[req.body.uID].nameTag)) {
-            res.send("new entry");
+        if (!(theGoods[req.body.uID])) {
+            //&& !(theGoods[req.body.uID].nameTag)
             console.log("new entry");
             req.body.liked = [];
-            console.log("JSON.stringify(theGoods)");
             theGoods.push(req.body);
-            console.log("pushed");
-            console.log("logged");
         } else {
             //the entry exists
             if (!(theGoods[req.body.uID].liked) || ((theGoods[req.body.uID].liked.toString()) == '')) {
@@ -217,15 +281,32 @@ app.post('/admin/API/users', seshCheck, adminCheck, function(req, res, next) {
 
                 theGoods[req.body.uID] = req.body;
             } else {
-                console.log("oioi");
+                console.log("liked exists");
             }
-            console.log('in else');
-            res.send("beep beep");
         }
         theGoods = JSON.stringify(theGoods);
         fs.writeFile('assets/users.json', theGoods, function(err, data) {
-            console.log('beed');
+            res.send('written');
         });
+    });
+});
+
+
+//delete users in admin thing
+app.delete('/admin/API/users', seshCheck, adminCheck, function(req, res, next) {
+    fs.readFile('assets/users.json', function(err, data) {
+        let parsed = JSON.parse(data.toString());
+        let done = false;
+        for (entry in parsed) {
+            if (req.body.victim == parsed[entry].uID) {
+                parsed.splice(entry, 1);
+                parsed = updateID(parsed);
+                fs.writeFile('assets/users.json', JSON.stringify(parsed), function(err, data) {
+                    done = true;
+                });
+            }
+        }
+        res.send((!done) ? "User Not Found, soz fam" : "Job Done");
     });
 });
 

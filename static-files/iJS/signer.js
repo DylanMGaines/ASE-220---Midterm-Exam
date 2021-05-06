@@ -11,6 +11,7 @@ function signInSetUp() {
             });
         });
         $("#signInFoot").hide();
+        $("#homeMan").after("<a href='/' class='text-decoration-none link-light'><li class='nav-link ps-3'>Authors</li></a>");
     } else {
         $("#sign").attr("id", "signIn");
         $("#signIn").attr("data-bs-toggle", "modal");

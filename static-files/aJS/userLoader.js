@@ -40,21 +40,10 @@ function lockIt() {
             contentType: 'application/json',
             data: JSON.stringify(shell),
             success: function(output, stat, reqData) {
-                console.log(shell);
+                console.log(output);
                 window.location.reload();
             }
         });
-        /*
-                $.post({
-                    type: 'POST',
-                    url: 'API/users',
-                    contentType: 'application/json',
-                    data: JSON.stringify(shell),
-                    success: function(output, stat, reqData) {
-                        console.log(shell);
-                        window.location.reload();
-                    }
-                });*/
     });
 
     //Get the records
@@ -107,6 +96,27 @@ function lockIt() {
         $('#fuID')[0].value = newman;
         $('#fnameTag')[0].value = "user" + newman;
         $('#frole')[0].value = 1;
+    });
+    $('#trash').click(function() {
+        if (!$('#fuID')[0].value) {
+            console.log("no trash")
+        } else {
+            let response = {
+                victim: $('#fuID')[0].value
+            };
+            $.ajax({
+                type: "DELETE",
+                url: "API/users",
+                contentType: 'application/json',
+                data: JSON.stringify(response),
+                success: function(output, stat, reqData) {
+                    console.log(output);
+                    console.log(stat);
+                    console.log(reqData);
+                    window.location.reload();
+                }
+            });
+        }
     });
 }
 
