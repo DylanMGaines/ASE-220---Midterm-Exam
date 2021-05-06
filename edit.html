@@ -17,7 +17,7 @@
     <script src="../resources/jquery-3.6.0.min.js"></script>
 
     <link href="../iCSS/theVibe.css" rel="stylesheet">
-    <link href="../aCSS/adminVibe.css" rel="stylesheet">
+    <link href="../tCSS/authVibe.css" rel="stylesheet">
     <script src="../iJS/shrinker.js"></script>
     <script src="../aJS/articleLoader.js"></script>
     <script src="../aJS/signer.js"></script>
@@ -35,9 +35,9 @@
 <body class="bg-body">
     <nav class="navbar navbar-dark bg-dark text-white container-fluid position-fixed m-0 primary-nav d-flex" style="z-index: 500; top: 0%;">
         <div class="flex-row container-fluid">
-            <a href="/admin" class="link-light text-decoration-none"><i
+            <a href="/" class="link-light text-decoration-none homeLink"><i
                     class="py-1 bi-journal-code m-0 flex-fill"></i></a>
-            <a href="/admin" class="link-light flex-fill text-decoration-none">
+            <a href="/" class="link-light flex-fill text-decoration-none homeLink">
                 <div class="title py-2 display-4 text-st ps-sm-3 h-100 d-none d-md-block">
                     Tryhard blog
                 </div>
@@ -49,7 +49,7 @@
             </div>
             <div class="collapse navbar-collapse bg-transparent" id="navbarNavDarkDropdown">
                 <ul class="navbar-nav mb-2 d-inline-block container-fluid">
-                    <a href="/admin" class="text-decoration-none link-light">
+                    <a href="/" class="text-decoration-none link-light homeLink">
                         <li class="nav-link ps-3">
                             Home
                         </li>
@@ -73,8 +73,8 @@
         <div class="ph mt-5 pt-3">
             <div id="testHolder"></div>
         </div>
-        <button class="btn-outline-dark rounded-pill text-center text-nowrap position-fixed rounded-circle 
-        ratio-1x1 bi-file-earmark-arrow-up fs-5 overflow-hidden" id="commitButton">
+        <button class='btn-outline-dark rounded-pill text-center text-nowrap position-fixed rounded-circle 
+        ratio-1x1 bi-file-earmark-arrow-up fs-5 overflow-hidden' id='commitButton'>
         </button>
     </main>
 
@@ -85,7 +85,7 @@
                 Links
             </li>
             <li class="ps-3">
-                <a href="/admin" class="link-secondary">
+                <a href="/" class="link-secondary homeLink">
                     Home
                 </a>
             </li>

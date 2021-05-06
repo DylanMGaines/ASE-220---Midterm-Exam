@@ -5,6 +5,7 @@ let articleObject;
 let urlParameters;
 
 function letsRock() {
+    $('.homeLink').attr('href', (window.sessionStorage.role == 1) ? '/admin' : '/');
     urlParameters = new URLSearchParams(window.location.search);
     //if this page is edit.html
     let isEditDotHTML = window.location.pathname.substring(window.location.pathname.lastIndexOf('/') + 1) == "edit";
@@ -20,11 +21,16 @@ function letsRock() {
         pathToImg: "",
         dateMade: "",
         lastMod: "",
-        author: ""
+        author: "",
+        published: ""
     };
     console.log(isEditDotHTML);
-    $.getJSON("/API/admin/templates/article", function(template) {
+    console.log(window.location.pathname);
+    let whermst = ((window.sessionStorage.role == 1) ? "/API/admin" : "/author/API") + "/templates/article";
+    $.getJSON(whermst, function(template) {
+        console.log(isEditDotHTML);
         $.getJSON("/API/articles", function(data) {
+            console.log(isEditDotHTML);
             if (isEditDotHTML) {
                 var aNum = urlParameters.get("a");
                 for (thing in data[aNum]) {
@@ -33,6 +39,10 @@ function letsRock() {
             }
             letsRoll(template, isEditDotHTML);
             sender(isEditDotHTML);
+            $('#published')[0].value = 'T';
+            $('#published').on('click', function() {
+                this.value = ($('#published')[0].value == 'T') ? 'F' : 'T';
+            });
         });
     });
 }
@@ -65,7 +75,6 @@ function letsRoll(templateString, isEditDotHTML) {
     $('#dateMade', $htmlString).append((dates[0].getMonth() + 1) + '/' + dates[0].getDate() + '/' + dates[0].getFullYear());
     let timeTrial = Math.round(Math.abs(((new Date().getTime()) - (dates[1]).getTime()) / (24 * 60 * 60 * 1000)));
     $('#datePubd', $htmlString).append('Last Updated ' + timeTrial + ' days ago');
-    console.log(articleObject['content']);
     $("#iPh").hide();
 
     listenUp();
@@ -79,9 +88,6 @@ function letsRoll(templateString, isEditDotHTML) {
     }
     $('#loadSpinner').remove();
 }
-
-
-
 
 function listenUp() {
     var $imgHolder = $('#clickBait');
@@ -177,8 +183,8 @@ function sender(isEditDotHTML) {
         if (!isEditDotHTML) {
             articleObject['dateMade'] = dm.toJSON();
         }
-        articleObject['author'] = window.sessionStorage.uID;
-        console.log(articleObject['author']);
+        articleObject['author'] = parseInt(window.sessionStorage.uID);
+        articleObject['published'] = $('#published')[0].value;
 
         let sendable = true;
         let unsendable = [];
@@ -201,7 +207,7 @@ function sender(isEditDotHTML) {
         }
 
         if (sendable) {
-            //get current blob
+            //get current blob  
             $.getJSON("/API/articles", function(data) {
                 //push new item into article array
                 if (urlParameters.has("a")) {
@@ -219,7 +225,7 @@ function sender(isEditDotHTML) {
                     data: JSON.stringify(data),
                     success: function(output, status, xhr) {
                         //modal pop up to notify of success
-                        window.location.href = "/admin";
+                        window.location.href = (window.sessionStorage.role == 1) ? "/admin" : "/";
                     }
                 });
             });

@@ -64,9 +64,20 @@ function letsRoll(articleInfo, aNum, templateString) {
     $('#loadSpinner').remove();
     $('#testHolder').remove();
     document.title = arItem.nameTag;
+
+    let isAuthor = false;
+    if (window.sessionStorage.length > 0) {
+        isAuthor = (window.sessionStorage.role == "3" && articleInfo[aNum].author == parseInt(window.sessionStorage.uID))
+    }
+    if (isAuthor) {
+        $("main").append("<button class='btn-outline-dark rounded-pill text-center text-nowrap position-fixed rounded-circle ratio-1x1 bi-pencil fs-5 overflow-hidden' id='editButton'> </button>");
+        $("#editButton").click(function() {
+            let link = "/author/edit?a=" + urlParameters.get('a');
+            window.location.href = link;
+        });
+    }
 }
 
-//TODO
 function smash(whichOne) {
     let theOne = (whichOne == 'B') ? $("#thatLikeButtonB") : $("#thatLikeButtonT");
     if (window.sessionStorage.role) {

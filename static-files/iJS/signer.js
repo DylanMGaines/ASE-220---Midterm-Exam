@@ -11,7 +11,9 @@ function signInSetUp() {
             });
         });
         $("#signInFoot").hide();
-        $("#homeMan").after("<a href='/' class='text-decoration-none link-light'><li class='nav-link ps-3'>Authors</li></a>");
+        if (window.sessionStorage.uID == "3") {
+            $("#homeMan").after("<a href='/author/articles' class='text-decoration-none link-light'><li class='nav-link ps-3'>Profile</li></a>");
+        }
     } else {
         $("#sign").attr("id", "signIn");
         $("#signIn").attr("data-bs-toggle", "modal");

@@ -65,6 +65,27 @@
     cursor: pointer;
 }
 
+#editButton {
+    right: 5%;
+    bottom: 5%;
+    width: 3rem;
+    height: 3rem;
+    transition: all 0.25s ease-in-out;
+    -webkit-transition: all 0.25s ease-in-out;
+    -moz-transition: all 0.25s ease-in-out;
+}
+
+#editButton:hover {
+    width: 6.9rem;
+    transition: all 0.25s ease-in-out;
+    -webkit-transition: all 0.25s ease-in-out;
+    -moz-transition: all 0.25s ease-in-out;
+}
+
+#editButton:hover::after {
+    content: "Edit";
+}
+
 @media only screen and (max-width:767px) {
     .bi-journal-code {
         text-align: start;

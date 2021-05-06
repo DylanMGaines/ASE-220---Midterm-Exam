@@ -51,7 +51,7 @@ function updateID(parsed) {
     return parsed;
 }
 
-//main page
+//*main page
 app.get('/', function(req, res, next) {
     fs.readFile('index.html', function(err, data) {
         res.send(data.toString());
@@ -59,16 +59,38 @@ app.get('/', function(req, res, next) {
 });
 
 
-//article load
+//*article load
 app.get('/article', function(req, res, next) {
     fs.readFile('article.html', function(err, data) {
         res.send(data.toString());
     });
 });
 
-//new user
+//*SIGN IN
 app.get('/newUser', function(req, res, next) {
     fs.readFile('register.html', function(err, data) {
+        res.send(data.toString());
+    });
+});
+
+//*Author edit
+app.get('/author/create', seshCheck, function(req, res, next) {
+    fs.readFile('create.html', function(err, data) {
+        res.send(data.toString());
+    });
+});
+
+//*Author edit
+app.get('/author/articles', seshCheck, function(req, res, next) {
+    fs.readFile('placeholder.html', function(err, data) {
+        res.send(data.toString());
+    });
+});
+
+
+//*Author edit
+app.get('/author/edit', seshCheck, function(req, res, next) {
+    fs.readFile('edit.html', function(err, data) {
         res.send(data.toString());
     });
 });
@@ -233,14 +255,14 @@ app.get('/admin', seshCheck, adminCheck, function(req, res, next) {
 
 //admin edit page
 app.get('/admin/edit', seshCheck, adminCheck, function(req, res, next) {
-    fs.readFile('admin/edit.html', function(err, data) {
+    fs.readFile('edit.html', function(err, data) {
         res.send(data.toString());
     });
 });
 
 //admin edit page
 app.get('/admin/create', seshCheck, adminCheck, function(req, res, next) {
-    fs.readFile('admin/create.html', function(err, data) {
+    fs.readFile('create.html', function(err, data) {
         res.send(data.toString());
     });
 });
@@ -319,6 +341,13 @@ app.get('/API/admin/templates/card', seshCheck, adminCheck, function(req, res, n
 
 //gets template for admin-side card
 app.get('/API/admin/templates/article', seshCheck, adminCheck, function(req, res, next) {
+    fs.readFile('admin/assets/templates.json', function(err, data) {
+        res.json(JSON.parse(data.toString())["article"]);
+    });
+});
+
+//gets template for admin-side card
+app.get('/author/API/templates/article', seshCheck, function(req, res, next) {
     fs.readFile('admin/assets/templates.json', function(err, data) {
         res.json(JSON.parse(data.toString())["article"]);
     });
