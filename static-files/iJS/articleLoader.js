@@ -5,14 +5,15 @@ let urlParameters;
 
 function letsRock() {
     urlParameters = new URLSearchParams(window.location.search);
-    $.getJSON("API/articles", function(articleInfo) {
+    $.getJSON("API/article?a=" + urlParameters.get("a"), function(articleInfo) {
         //initial load
+        console.log('work');
         $.getJSON("API/templates/article", function(template) {
-            letsRoll(articleInfo, urlParameters.get("a"), template);
-            articleInfo[urlParameters.get("a")].views++;
+            letsRoll(articleInfo, template);
+            articleInfo.views++;
             $.ajax({
                 type: "PUT",
-                url: "API/articles",
+                url: "API/article?a=" + urlParameters.get("a"),
                 contentType: "application/JSON",
                 data: JSON.stringify(articleInfo),
                 success: function(output, status, xhr) {
@@ -20,28 +21,26 @@ function letsRock() {
                 },
                 error: function(output, status, xhr) {
                     console.log(output);
-                    console.log('xhr');
                     console.log(xhr);
-                    console.log('status');
                     console.log(status);
-
                 }
             });
         });
     });
 }
 
-function letsRoll(articleInfo, aNum, templateString) {
-    let arItem = articleInfo[aNum];
+function letsRoll(articleInfo, templateString) {
+    let arItem = articleInfo;
     let $htmlString = $(templateString).clone(true);
     $htmlString = $htmlString[0];
-    console.log(window.sessionStorage.role);
+    console.log(articleInfo.aID);
 
-    //to be handled on session implementations
-    if (window.sessionStorage.role) {
-        $.getJSON('API/users', function(seshData) {
-            if (seshData[window.sessionStorage.uID].liked.includes(aNum)) {
-                $('.bi-hand-thumbs-up', $htmlString).toggleClass("active");
+    if (window.sessionStorage.uID) {
+        $.get('API/user', function(output, status, xhr) {
+            for (like in output.liked) {
+                if (parseInt(output.liked[like]) == articleInfo.aID) {
+                    $('.bi-hand-thumbs-up', $htmlString).toggleClass("active");
+                }
             }
         });
     }
@@ -50,8 +49,11 @@ function letsRoll(articleInfo, aNum, templateString) {
 
     let i = 0;
     for (x in arItem) {
+        if (x == 'aID') {
+            continue;
+        }
         $(bitsNPieces[i], $htmlString).append(arItem[x]);
-        if (i == 4) { break; }
+        if (i == 5) { break; }
         i++;
     }
 
@@ -65,56 +67,51 @@ function letsRoll(articleInfo, aNum, templateString) {
     $('#testHolder').remove();
     document.title = arItem.nameTag;
 
-    let isAuthor = false;
-    if (window.sessionStorage.length > 0) {
-        isAuthor = (window.sessionStorage.role == "3" && articleInfo[aNum].author == parseInt(window.sessionStorage.uID))
-    }
-    if (isAuthor) {
-        $("main").append("<button class='btn-outline-dark rounded-pill text-center text-nowrap position-fixed rounded-circle ratio-1x1 bi-pencil fs-5 overflow-hidden' id='editButton'> </button>");
-        $("#editButton").click(function() {
-            let link = "/author/edit?a=" + urlParameters.get('a');
-            window.location.href = link;
-        });
-    }
+    $.get('/API/auth/in?a=' + articleInfo.aID, function(output, status, xhr) {
+        if (output) {
+            $("main").append("<button class='btn-outline-dark rounded-pill text-center text-nowrap position-fixed rounded-circle ratio-1x1 bi-pencil fs-5 overflow-hidden' id='editButton'> </button>");
+            $("#editButton").click(function() {
+                let link = "/author/edit?a=" + urlParameters.get('a');
+                window.location.href = link;
+            });
+        }
+    });
 }
 
 function smash(whichOne) {
-    let theOne = (whichOne == 'B') ? $("#thatLikeButtonB") : $("#thatLikeButtonT");
     if (window.sessionStorage.role) {
+        let theOne = (whichOne == 'B') ? $("#thatLikeButtonB") : $("#thatLikeButtonT");
         let theOther = (whichOne == 'T') ? $("#thatLikeButtonB") : $("#thatLikeButtonT");
-        $.getJSON("API/articles", function(articleInfo) {
-            $.getJSON("API/users", function(userInfo) {
-                let aNum = urlParameters.get("a");
-                let uNum = window.sessionStorage.uID;
-                console.log(articleInfo[aNum]);
-                console.log(userInfo[uNum]);
-
-                if (theOne.hasClass('active') == true) {
-                    articleInfo[aNum].likes++;
-                    userInfo[uNum].liked.push(aNum);
-                } else if (theOne.hasClass('active') == false) {
-                    articleInfo[aNum].likes--;
-                    userInfo[uNum].liked.splice(userInfo[uNum].liked.indexOf(aNum), 1);
+        let aNum = urlParameters.get("a");
+        $.getJSON("API/article?a=" + aNum, function(articleInfo) {
+            $.getJSON("API/user", function(userInfo) {
+                if (theOne.hasClass('active')) {
+                    articleInfo.likes++;
+                    userInfo.liked.push(aNum);
+                } else if (!theOne.hasClass('active')) {
+                    articleInfo.likes--;
+                    userInfo.liked.splice(userInfo.liked.indexOf(aNum), 1);
                 }
                 $.ajax({
                     type: "PUT",
-                    url: "API/articles",
+                    url: "API/article",
                     contentType: "application/JSON",
                     data: JSON.stringify(articleInfo),
                     success: function(output, status, xhr) {
                         theOther.toggleClass("active");
-                        $('.counter').text(articleInfo[aNum].likes);
+                        $('.counter').text(articleInfo.likes);
                         theOne.blur();
                         theOther.blur();
+                        console.log("done");
                     }
                 });
                 $.ajax({
                     type: "PUT",
-                    url: "API/users",
+                    url: "API/user",
                     contentType: "application/JSON",
                     data: JSON.stringify(userInfo),
                     success: function(output, status, xhr) {
-                        console.log('work');
+                        console.log('User Updated');
                     }
                 });
             });

@@ -34,7 +34,7 @@ $(document).on('submit', '#theBlackDoor', function(e) {
     }
     $.ajax({
         type: 'POST',
-        url: '/API/auth/signer',
+        url: '/API/auth/in',
         contentType: 'application/json',
         data: JSON.stringify(formData),
         success: function(output, status, xhr) {

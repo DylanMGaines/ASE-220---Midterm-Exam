@@ -1,5 +1,5 @@
 //nameTag, subtitle, pathToImg, desc, dateMade, likes, imgCap, content
-const bitsNPieces = ['.card-title', '.card-text', '.text-muted']; //title, subtitle, date updated
+const bitsNPieces = ['', '.card-title', '.card-text', '.text-muted']; //title, subtitle, date updated
 let urlParameters = new URLSearchParams(window.location.search);
 
 function cardLoader(data, accessing, cardString) {
@@ -15,7 +15,7 @@ function cardLoader(data, accessing, cardString) {
         for (x in accessed) {
             $(bitsNPieces[i], $htmlString).append(accessed[x]);
             i++;
-            if (i >= 2) { break; }
+            if (i >= 3) { break; }
         }
         let dateMade = new Date(accessed.dateMade);
         let timeTrial = Math.round(Math.abs(((new Date().getTime()) - (dateMade).getTime()) / (24 * 60 * 60 * 1000)));;
@@ -25,6 +25,7 @@ function cardLoader(data, accessing, cardString) {
         $('#testHolder').before($htmlString);
         $('#loadSpinner').remove();
     } else if (data[accessing].published == 'F') {
+        //data skipped because it isn't public
         console.log('nah');
     }
 }
@@ -39,6 +40,7 @@ function placehold() {
             $('head').append(buttonCSS);
         }
     }
+    let servCheck = true;
     $.getJSON("API/articles", function(data) {
         //initial load (loads 6)
         $.getJSON("API/templates/card", function(card) {

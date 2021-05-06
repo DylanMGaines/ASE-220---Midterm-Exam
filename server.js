@@ -58,7 +58,6 @@ app.get('/', function(req, res, next) {
     });
 });
 
-
 //*article load
 app.get('/article', function(req, res, next) {
     fs.readFile('article.html', function(err, data) {
@@ -66,21 +65,123 @@ app.get('/article', function(req, res, next) {
     });
 });
 
-//*SIGN IN
+
+//*returns the articles "database"
+app.get('/API/articles', function(req, res, next) {
+    fs.readFile('assets/articles.json', function(err, data) {
+        res.json(JSON.parse(data.toString()));
+    });
+});
+
+//*returns a specific article
+app.get('/API/article', function(req, res, next) {
+    fs.readFile('assets/articles.json', function(err, data) {
+        res.json(JSON.parse(data.toString())[req.query.a]);
+    });
+});
+
+//*Updates a specific article
+app.put('/API/article', function(req, res, next) {
+    fs.readFile('assets/articles.json', function(err, data) {
+        let parsed = JSON.parse(data.toString());
+        parsed[req.body.aID] = req.body;
+        fs.writeFile('assets/articles.json', JSON.stringify(parsed), function(err, data) {
+            console.log('done');
+        });
+    });
+});
+
+//*returns card template
+app.get('/API/templates/card', function(req, res, next) {
+    fs.readFile('assets/templates.json', function(err, data) {
+        res.json(JSON.parse(data.toString())["card"]);
+    });
+});
+
+//*sign in API
+/** loads users.json, parses into users var, loops through users, if email or nameTag (username) matches entry,
+ * sets up req sessions, responds with uID and role for client-side processing, returns to break loop.
+ * If no match, returns -1 **/
+app.post('/API/auth/in', function(req, res, next) {
+    fs.readFile('users/users.json', function(err, data) {
+        if (err) console.log(err);
+        let users = JSON.parse(data.toString());
+        for (let i = 0; i < users.length; i++) {
+            if (users[i].nameTag == req.body.nameTag || users[i].email == req.body.nameTag) {
+                if (bcrypt.compareSync(req.body.password, users[i].password)) {
+                    //user found in db
+                    req.session.user = {
+                        ID: users[i].uID,
+                        nameTag: users[i].nameTag,
+                        fName: users[i].fName,
+                        lName: users[i].lName,
+                        role: users[i].role
+                    };
+                    res.json({ status: 1, message: 'auth nailed', role: req.session.user.role, uID: users[i].uID });
+                    return;
+                }
+            }
+        }
+        res.json({ status: -1, message: 'auth failed' });
+    });
+});
+
+//*verifies user is an authorized writer and wrote the tagged article
+app.get('/API/auth/in', function(req, res, next) {
+    if (req.query) {
+        if (req.session.user) {
+            if (req.session.user.ID) {
+                console.log(req.query.a);
+                fs.readFile('assets/articles.json', function(err, data) {
+                    let parsed = JSON.parse(data.toString());
+                    res.send(parsed[req.query.a].author == req.session.user.ID);
+                    return;
+                });
+            }
+        }
+    }
+});
+
+//*users API -- returns a user.json
+app.get('/API/user', function(req, res, next) {
+    if (fs.existsSync('users/user_' + req.session.user.ID + '.json')) {
+        if (req.session.user) {
+            if (req.session.user.ID) {
+                fs.readFile('users/user_' + req.session.user.ID + '.json', function(err, data) {
+                    res.json(JSON.parse(data.toString()));
+                });
+            }
+        }
+    } else {
+        res.send('nada');
+    }
+});
+
+//*overwrite a user entry
+app.put('/API/user', function(req, res, next) {
+    let uf = 'users/user_' + req.session.user.ID + '.json';
+    if (fs.existsSync(uf)) {
+        fs.writeFile(uf, JSON.stringify(req.body), function(err, data) {
+            res.send("new User done");
+        });
+    }
+});
+
+//SIGN IN
 app.get('/newUser', function(req, res, next) {
     fs.readFile('register.html', function(err, data) {
         res.send(data.toString());
     });
 });
 
-//*Author edit
+//Author edit
 app.get('/author/create', seshCheck, function(req, res, next) {
     fs.readFile('create.html', function(err, data) {
         res.send(data.toString());
     });
 });
 
-//*Author edit
+//Author edit
 app.get('/author/articles', seshCheck, function(req, res, next) {
     fs.readFile('library.html', function(err, data) {
         res.send(data.toString());
@@ -88,7 +189,7 @@ app.get('/author/articles', seshCheck, function(req, res, next) {
 });
 
 
-//*Author edit
+//Author edit
 app.get('/author/edit', seshCheck, function(req, res, next) {
     fs.readFile('edit.html', function(err, data) {
         res.send(data.toString());
@@ -153,41 +254,6 @@ app.put('/API/news', function(req, res, next) {
     });
 });
 
-//returns the articles "database"
-app.get('/API/articles', function(req, res, next) {
-    fs.readFile('assets/articles.json', function(err, data) {
-        res.json(JSON.parse(data.toString()));
-    });
-});
-
-//overwrites articles "database"
-app.put('/API/articles', function(req, res, next) {
-    fs.writeFile('assets/articles.json', JSON.stringify(req.body), function(err, data) {
-        res.send('done');
-    });
-});
-
-//users API -- returns users.json
-app.get('/API/users', function(req, res, next) {
-    fs.readFile('assets/users.json', function(err, data) {
-        res.json(JSON.parse(data.toString()));
-    });
-});
-
-//overwrites user "database"
-app.put('/API/users', function(req, res, next) {
-    fs.writeFile('assets/users.json', JSON.stringify(req.body), function(err, data) {
-        res.send('done');
-    });
-});
-
-//returns card template
-app.get('/API/templates/card', function(req, res, next) {
-    fs.readFile('assets/templates.json', function(err, data) {
-        res.json(JSON.parse(data.toString())["card"]);
-    });
-});
-
 //returns article template
 app.get('/API/templates/modal', function(req, res, next) {
     fs.readFile('assets/modals.json', function(err, data) {
@@ -199,34 +265,6 @@ app.get('/API/templates/modal', function(req, res, next) {
 app.get('/API/templates/article', function(req, res, next) {
     fs.readFile('assets/templates.json', function(err, data) {
         res.json(JSON.parse(data.toString())["article"]);
-    });
-});
-
-//sign in API
-/** loads users.json, parses into users var, loops through users, if email or nameTag (username) matches entry,
- * sets up req sessions, responds with uID and role for client-side processing, returns to break loop.
- * If no match, returns -1 **/
-app.post('/API/auth/signer', function(req, res, next) {
-    fs.readFile('assets/users.json', function(err, data) {
-        if (err) console.log(err);
-        let users = JSON.parse(data.toString());
-        for (let i = 0; i < users.length; i++) {
-            if (users[i].nameTag == req.body.nameTag || users[i].email == req.body.nameTag) {
-                if (bcrypt.compareSync(req.body.password, users[i].password)) {
-                    //user found in db
-                    req.session.user = {
-                        ID: i,
-                        nameTag: users[i].nameTag,
-                        fName: users[i].fName,
-                        lName: users[i].lName,
-                        role: users[i].role
-                    };
-                    res.json({ status: 1, message: 'auth nailed', role: req.session.user.role, uID: users[i].uID });
-                    return;
-                }
-            }
-        }
-        res.json({ status: -1, message: 'auth failed' });
     });
 });
 
@@ -339,7 +377,7 @@ app.get('/API/admin/templates/card', seshCheck, adminCheck, function(req, res, n
     });
 });
 
-//*gets template for author-side card
+//gets template for author-side card
 app.get('/author/API/templates/card', seshCheck, function(req, res, next) {
     fs.readFile('admin/assets/templates.json', function(err, data) {
         res.json(JSON.parse(data.toString())["card"]);

@@ -56,7 +56,6 @@ function lockIt() {
             for (let thing in userInfo[user]) {
                 let entry = "";
                 if (thing == "password") {
-                    console.log("ping");
                     continue;
                 } else if (thing == "liked") {
                     for (let like in userInfo[user][thing]) {
