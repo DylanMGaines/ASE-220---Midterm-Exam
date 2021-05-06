@@ -82,7 +82,7 @@ app.get('/author/create', seshCheck, function(req, res, next) {
 
 //*Author edit
 app.get('/author/articles', seshCheck, function(req, res, next) {
-    fs.readFile('placeholder.html', function(err, data) {
+    fs.readFile('library.html', function(err, data) {
         res.send(data.toString());
     });
 });
@@ -334,6 +334,13 @@ app.delete('/admin/API/users', seshCheck, adminCheck, function(req, res, next) {
 
 //gets template for admin-side card
 app.get('/API/admin/templates/card', seshCheck, adminCheck, function(req, res, next) {
+    fs.readFile('admin/assets/templates.json', function(err, data) {
+        res.json(JSON.parse(data.toString())["card"]);
+    });
+});
+
+//*gets template for author-side card
+app.get('/author/API/templates/card', seshCheck, function(req, res, next) {
     fs.readFile('admin/assets/templates.json', function(err, data) {
         res.json(JSON.parse(data.toString())["card"]);
     });

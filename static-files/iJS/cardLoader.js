@@ -33,7 +33,7 @@ function placehold() {
     let currentLoaded;
     if (window.sessionStorage.length > 0) {
         if (window.sessionStorage.role == "3") {
-            let button = "<button class='btn-outline-dark rounded-pill text-center text-nowrap position-fixed rounded-circle ratio-1x1 bi-keyboard fs-5 overflow-hidden' id='createButton'></button>"
+            let button = "<button class='btn-outline-dark rounded-pill text-center text-nowrap position-fixed rounded-circle ratio-1x1 bi-keyboard fs-5 overflow-hidden' id='createButton'> </button>"
             $('main').append(button);
             let buttonCSS = "<style>#createButton {right: 5%;bottom: 5%;width: 3rem;height: 3rem;transition: all 0.25s ease-in-out;-webkit-transition: all 0.25s ease-in-out;-moz-transition: all 0.25s ease-in-out;}#createButton:hover {width: 7rem;transition: all 0.25s ease-in-out;-webkit-transition: all 0.25s ease-in-out;-moz-transition: all 0.25s ease-in-out;}#createButton:hover::after {content: 'create';}</style>"
             $('head').append(buttonCSS);

@@ -11,7 +11,7 @@ function signInSetUp() {
             });
         });
         $("#signInFoot").hide();
-        if (window.sessionStorage.uID == "3") {
+        if (window.sessionStorage.role == "3") {
             $("#homeMan").after("<a href='/author/articles' class='text-decoration-none link-light'><li class='nav-link ps-3'>Profile</li></a>");
         }
     } else {
