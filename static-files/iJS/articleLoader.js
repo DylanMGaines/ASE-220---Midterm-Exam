@@ -79,8 +79,9 @@ function letsRoll(articleInfo, templateString) {
 }
 
 function smash(whichOne) {
+    let theOne = (whichOne == 'B') ? $("#thatLikeButtonB") : $("#thatLikeButtonT");
     if (window.sessionStorage.role) {
-        let theOne = (whichOne == 'B') ? $("#thatLikeButtonB") : $("#thatLikeButtonT");
+        console.log(window.sessionStorage.role);
         let theOther = (whichOne == 'T') ? $("#thatLikeButtonB") : $("#thatLikeButtonT");
         let aNum = urlParameters.get("a");
         $.getJSON("API/article?a=" + aNum, function(articleInfo) {
