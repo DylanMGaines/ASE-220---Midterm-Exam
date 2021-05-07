@@ -34,16 +34,21 @@ function placehold() {
     let currentLoaded;
     if (window.sessionStorage.length > 0) {
         if (window.sessionStorage.role == "3") {
-            let button = "<button class='btn-outline-dark rounded-pill text-center text-nowrap position-fixed rounded-circle ratio-1x1 bi-keyboard fs-5 overflow-hidden' id='createButton'> </button>"
-            $('main').append(button);
-            let buttonCSS = "<style>#createButton {right: 5%;bottom: 5%;width: 3rem;height: 3rem;transition: all 0.25s ease-in-out;-webkit-transition: all 0.25s ease-in-out;-moz-transition: all 0.25s ease-in-out;}#createButton:hover {width: 7rem;transition: all 0.25s ease-in-out;-webkit-transition: all 0.25s ease-in-out;-moz-transition: all 0.25s ease-in-out;}#createButton:hover::after {content: 'create';}</style>"
-            $('head').append(buttonCSS);
+            $.getJSON("API/templates?t=create", function(button) {
+                $('main').append(button);
+                $.getJSON("API/templates?t=Ccreate", function(buttonCSS) {
+                    $('head').append(buttonCSS);
+                    $('#createButton').click(function() {
+                        window.location.href = '/' + ((window.sessionStorage.role == 1) ? 'admin' : 'author') + '/create';
+                    });
+                });
+            });
         }
     }
     let servCheck = true;
     $.getJSON("API/articles", function(data) {
         //initial load (loads 6)
-        $.getJSON("API/templates/card", function(card) {
+        $.getJSON("API/templates?t=card", function(card) {
             for (currentLoaded = 0; currentLoaded < data.length && currentLoaded < 6; currentLoaded++) {
                 cardLoader(data, (data.length - (currentLoaded + 1)), card);
             }

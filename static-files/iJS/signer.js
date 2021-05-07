@@ -19,8 +19,8 @@ function signInSetUp() {
         $("#signIn").attr("data-bs-toggle", "modal");
         $("#signIn").attr("data-bs-target", "#signinmodal");
         $("#signIn").append(" In");
-        $.getJSON("API/templates/modal", function(modals) {
-            $(".bg-body").append(modals.signInModal);
+        $.getJSON("API/templates?t=modal", function(modal) {
+            $(".bg-body").append(modal);
         });
     }
 }

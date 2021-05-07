@@ -8,7 +8,7 @@ function letsRock() {
     $.getJSON("API/article?a=" + urlParameters.get("a"), function(articleInfo) {
         //initial load
         console.log('work');
-        $.getJSON("API/templates/article", function(template) {
+        $.getJSON("API/templates?t=article", function(template) {
             letsRoll(articleInfo, template);
             articleInfo.views++;
             $.ajax({

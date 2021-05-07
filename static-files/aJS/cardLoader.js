@@ -1,10 +1,9 @@
 //nameTag, subtitle, likes, imgCap, content, pathToImg, desc, dateMade
-let urlp = new URLSearchParams(window.location.search)
+let urlp = new URLSearchParams(window.location.search);
+var currentLoaded;
 
 function cardLoader(data, accessing, templateString) {
     let accessed = data[accessing];
-    console.log(accessed);
-    console.log(parseInt(window.sessionStorage.uID));
     if (accessed.author == parseInt(window.sessionStorage.uID) || parseInt(window.sessionStorage.role) == 1) {
         let $htmlString = $(templateString).clone(true);
         $('.card-title', $htmlString).append(accessed["nameTag"]);
@@ -19,24 +18,25 @@ function cardLoader(data, accessing, templateString) {
 }
 
 function placehold() {
-    var currentLoaded = 0;
     $.getJSON("/API/articles", function(data) {
         //initial load (loads 6)
-        $.getJSON("/author/API/templates/card", function(template) {
-            for (; currentLoaded < data.length && currentLoaded < 6; currentLoaded++) {
+        $.getJSON("/API/templates?t=Acard", function(template) {
+            for (currentLoaded = 0; currentLoaded < data.length && currentLoaded < 6; currentLoaded++) {
                 cardLoader(data, (data.length - (currentLoaded + 1)), template);
             }
             //load button clicked (loads 6 more)
             $("#loadButton").click(function() {
-                for (; currentLoaded < data.length && currentLoaded < 6; currentLoaded++) {
-                    cardLoader(data, (data.length - (currentLoaded + 1)), template);
+                let thisRound = 0;
+                console.log(currentLoaded);
+                console.log(data);
+                for (; currentLoaded < data.length && thisRound < 6; thisRound++) {
+                    cardLoader(data, (data.length - (++currentLoaded)), template);
                 }
             });
         });
-    });
-    console.log($("#createButton"));
-    $("#createButton").click(function() {
-        window.location.href = '/' + ((window.sessionStorage.role == 1) ? 'admin' : 'author') + '/create';
+        $('#createButton').click(function() {
+            window.location.href = '/' + ((window.sessionStorage.role == 1) ? 'admin' : 'author') + '/create';
+        });
     });
 }
 

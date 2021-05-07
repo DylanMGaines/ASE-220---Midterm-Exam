@@ -4,7 +4,7 @@ function signTime() {
         oCount++;
         if (oCount >= 3) {
             oCount = 0;
-            $.get('API/auth/signOut', function() {
+            $.get('/API/auth/signOut', function() {
                 window.sessionStorage.clear();
                 window.location.href = '/';
             });

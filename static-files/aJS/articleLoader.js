@@ -10,6 +10,7 @@ function letsRock() {
     //if this page is edit.html
     let isEditDotHTML = window.location.pathname.substring(window.location.pathname.lastIndexOf('/') + 1) == "edit";
     articleObject = {
+        aID: null,
         nameTag: "",
         subtitle: "",
         likes: 0,
@@ -24,27 +25,32 @@ function letsRock() {
         author: "",
         published: ""
     };
-    console.log(isEditDotHTML);
-    console.log(window.location.pathname);
-    let whermst = ((window.sessionStorage.role == 1) ? "/API/admin" : "/author/API") + "/templates/article";
+    let whermst = "/API/templates?t=" + 'Aarticle';
+    //((window.sessionStorage.role == 1) ? "/API/admin" : "/author/API") + "/templates/article";
     $.getJSON(whermst, function(template) {
-        console.log(isEditDotHTML);
-        $.getJSON("/API/articles", function(data) {
-            console.log(isEditDotHTML);
-            if (isEditDotHTML) {
-                var aNum = urlParameters.get("a");
-                for (thing in data[aNum]) {
-                    articleObject[thing] = data[aNum][thing];
+        console.log(window.location.pathname);
+        if (isEditDotHTML) {
+            var aNum = urlParameters.get("a");
+            $.getJSON("/API/article?a=" + aNum, function(data) {
+                console.log(window.location.pathname);
+                for (thing in data) {
+                    articleObject[thing] = data[thing];
                 }
-            }
-            letsRoll(template, isEditDotHTML);
-            sender(isEditDotHTML);
-            trashMan(isEditDotHTML);
-            $('#published')[0].value = 'T';
-            $('#published').on('click', function() {
-                this.value = ($('#published')[0].value == 'T') ? 'F' : 'T';
+                hitIt(template, isEditDotHTML, this);
             });
-        });
+        } else {
+            hitIt(template, isEditDotHTML, this);
+        }
+    });
+}
+
+function hitIt(template, isEditDotHTML, thisDot) {
+    letsRoll(template, isEditDotHTML);
+    sender(isEditDotHTML);
+    trashMan(isEditDotHTML);
+    $('#published')[0].value = 'T';
+    $('#published').on('click', function() {
+        thisDotValue.value = ($('#published')[0].value == 'T') ? 'F' : 'T';
     });
 }
 
@@ -58,6 +64,7 @@ function letsRoll(templateString, isEditDotHTML) {
     let i = 0;
     //loop through article object for title, subtitle, likeCount, figure caption
     for (x in articleObject) {
+        if (x == 'aID') { continue; }
         if (i == 2 || i == 5) { i++; continue; }
         $(bitsNPieces[i], $htmlString).val(articleObject[x]);
         if (i == 7) { break; }
@@ -169,9 +176,12 @@ function trashMan(isEditDotHTML) {
         if (!isEditDotHTML) {
             window.location.href = (window.sessionStorage.role == 1) ? "/admin" : "/";
         } else if (isEditDotHTML) {
-            if (tCount++ > 3) {
+            if (tCount++ > 2) {
                 console.log(articleObject);
-                /*$.ajax({
+                let response = {
+                    victim: articleObject.aID
+                }
+                $.ajax({
                     type: "DELETE",
                     url: "API/articles",
                     contentType: 'application/json',
@@ -180,9 +190,9 @@ function trashMan(isEditDotHTML) {
                         console.log(output);
                         console.log(stat);
                         console.log(reqData);
-                        window.location.reload();
+                        window.location.href = (window.sessionStorage.role == 1) ? "/admin" : "/";
                     }
-                });*/
+                });
             }
         }
     });

@@ -43,13 +43,16 @@ function adminCheck(req, res, next) {
     }
 }
 
-function updateID(parsed) {
+function updateID(parsed, entry, idType) {
     let i = 0;
+    let prop = idType + 'ID';
     for (user in parsed) {
-        parsed[user].uID = i++;
+        parsed[user][prop] = i++;
     }
     return parsed;
 }
+
+//OIOI MAIN SECTION
 
 //*main page
 app.get('/', function(req, res, next) {
@@ -72,6 +75,61 @@ app.get('/newUser', function(req, res, next) {
     });
 });
 
+//OIOI ADMINS INNIT
+
+//*ADMIN MAIN page
+app.get('/admin', seshCheck, adminCheck, function(req, res, next) {
+    fs.readFile('admin/index.html', function(err, data) {
+        res.send(data.toString());
+    });
+});
+
+//*admin edit page
+app.get('/admin/edit', seshCheck, adminCheck, function(req, res, next) {
+    fs.readFile('edit.html', function(err, data) {
+        res.send(data.toString());
+    });
+});
+
+//*admin CREATE page
+app.get('/admin/create', seshCheck, adminCheck, function(req, res, next) {
+    fs.readFile('create.html', function(err, data) {
+        res.send(data.toString());
+    });
+});
+
+//*admin users page
+app.get('/admin/users', seshCheck, adminCheck, function(req, res, next) {
+    fs.readFile('admin/users.html', function(err, data) {
+        res.send(data.toString());
+    });
+});
+
+//OIOI AUTHORS
+
+//Author edit
+app.get('/author/create', seshCheck, function(req, res, next) {
+    fs.readFile('create.html', function(err, data) {
+        res.send(data.toString());
+    });
+});
+
+//Author edit
+app.get('/author/articles', seshCheck, function(req, res, next) {
+    fs.readFile('library.html', function(err, data) {
+        res.send(data.toString());
+    });
+});
+
+//Author edit
+app.get('/author/edit', seshCheck, function(req, res, next) {
+    fs.readFile('edit.html', function(err, data) {
+        res.send(data.toString());
+    });
+});
+
+//OIOI API'S
+//API --  articles
 //*returns the articles "database"
 app.get('/API/articles', function(req, res, next) {
     fs.readFile('assets/articles.json', function(err, data) {
@@ -79,6 +137,7 @@ app.get('/API/articles', function(req, res, next) {
     });
 });
 
+//API -- article?a=
 //*returns a specific article
 app.get('/API/article', function(req, res, next) {
     fs.readFile('assets/articles.json', function(err, data) {
@@ -86,6 +145,7 @@ app.get('/API/article', function(req, res, next) {
     });
 });
 
+//API -- article?a=
 //*Updates a specific article
 app.put('/API/article', function(req, res, next) {
     fs.readFile('assets/articles.json', function(err, data) {
@@ -97,15 +157,7 @@ app.put('/API/article', function(req, res, next) {
     });
 });
 
-//*TEMPLATE FOR CARD -- MAIN
-//*returns card template
-app.get('/API/templates/card', function(req, res, next) {
-    fs.readFile('assets/templates.json', function(err, data) {
-        res.json(JSON.parse(data.toString())["card"]);
-    });
-});
-
-//*sign in API
+// API -- sign in
 /** loads users.json, parses into users var, loops through users, if email or nameTag (username) matches entry,
  * sets up req sessions, responds with uID and role for client-side processing, returns to break loop.
  * If no match, returns -1 **/
@@ -133,7 +185,7 @@ app.post('/API/auth/in', function(req, res, next) {
     });
 });
 
-//* AUTHOR VERIFY
+//API -- author verify ?a=
 //verifies user is an authorized writer and wrote the tagged article
 app.get('/API/auth/in', function(req, res, next) {
     if (req.query) {
@@ -150,6 +202,7 @@ app.get('/API/auth/in', function(req, res, next) {
     }
 });
 
+//API -- get user obj
 //* Gets a user object
 //returns a user.json
 app.get('/API/user', function(req, res, next) {
@@ -166,6 +219,7 @@ app.get('/API/user', function(req, res, next) {
     }
 });
 
+//API -- user
 //*UPDATE USER ENTRY
 app.put('/API/user', function(req, res, next) {
     let uf = 'users/user_' + req.session.user.ID + '.json';
@@ -176,6 +230,7 @@ app.put('/API/user', function(req, res, next) {
     }
 });
 
+//API -- new user
 //*CREATE A NEW USER
 app.post('/API/user', function(req, res, next) {
     for (thing in req.body) {
@@ -212,6 +267,7 @@ app.post('/API/user', function(req, res, next) {
     });
 });
 
+//API -- VALIDATION
 //*SIGN IN VERIFY
 //check if username or email is taken, verifies if passwords, email or usernames are valid via matching a regex
 app.get('/API/check', function(req, res, next) {
@@ -275,43 +331,16 @@ app.get('/API/check', function(req, res, next) {
     }
 });
 
-//Author edit
-app.get('/author/create', seshCheck, function(req, res, next) {
-    fs.readFile('create.html', function(err, data) {
-        res.send(data.toString());
-    });
-});
-
-//Author edit
-app.get('/author/articles', seshCheck, function(req, res, next) {
-    fs.readFile('library.html', function(err, data) {
-        res.send(data.toString());
-    });
-});
-
-
-//Author edit
-app.get('/author/edit', seshCheck, function(req, res, next) {
-    fs.readFile('edit.html', function(err, data) {
-        res.send(data.toString());
-    });
-});
-
-//returns article template
-app.get('/API/templates/modal', function(req, res, next) {
-    fs.readFile('assets/modals.json', function(err, data) {
-        res.json(JSON.parse(data.toString()));
-    });
-});
-
-//returns article template
-app.get('/API/templates/article', function(req, res, next) {
+//API templates
+//*returns template via query
+app.get('/API/templates', function(req, res, next) {
     fs.readFile('assets/templates.json', function(err, data) {
-        res.json(JSON.parse(data.toString())["article"]);
+        res.json(JSON.parse(data.toString())[req.query.t]);
+        console.log(req.query.t);
     });
 });
 
-//sign out API
+//API sign out
 /** deletes server-side user record, responds, moves to next callback **/
 app.get('/API/auth/signOut', function(req, res, next) {
     req.session.user = null;
@@ -319,52 +348,16 @@ app.get('/API/auth/signOut', function(req, res, next) {
     next();
 });
 
-//I have no clue why, but this just doesn't work without the /admin
-/** deletes server-side user record, responds, moves to next callback **/
-app.get('/admin/API/auth/signOut', function(req, res, next) {
-    req.session.user = null;
-    res.send('see ya space cowboy');
-    next();
-});
-
-//admin page
-app.get('/admin', seshCheck, adminCheck, function(req, res, next) {
-    fs.readFile('admin/index.html', function(err, data) {
-        res.send(data.toString());
-    });
-});
-
-//admin edit page
-app.get('/admin/edit', seshCheck, adminCheck, function(req, res, next) {
-    fs.readFile('edit.html', function(err, data) {
-        res.send(data.toString());
-    });
-});
-
-//admin edit page
-app.get('/admin/create', seshCheck, adminCheck, function(req, res, next) {
-    fs.readFile('create.html', function(err, data) {
-        res.send(data.toString());
-    });
-});
-
-//admin users page
-app.get('/admin/users', seshCheck, adminCheck, function(req, res, next) {
-    fs.readFile('admin/users.html', function(err, data) {
-        res.send(data.toString());
-    });
-});
-
-//users API -- returns users.json
+//API -- returns users.json
 app.get('/admin/API/users', function(req, res, next) {
-    fs.readFile('assets/users.json', function(err, data) {
+    fs.readFile('users/users.json', function(err, data) {
         res.json(JSON.parse(data.toString()));
     });
 });
 
-//gets template for admin-side card
+//API - new user admin-side
 app.post('/admin/API/users', seshCheck, adminCheck, function(req, res, next) {
-    fs.readFile('assets/users.json', function(err, data) {
+    fs.readFile('users/users.json', function(err, data) {
         let theGoods = JSON.parse(data.toString());
         req.body.uID = parseInt(req.body.uID);
         req.body.role = parseInt(req.body.role);
@@ -375,7 +368,7 @@ app.post('/admin/API/users', seshCheck, adminCheck, function(req, res, next) {
             req.body.liked = [];
             theGoods.push(req.body);
         } else {
-            //the entry exists
+            //the entry exists...
             if (!(theGoods[req.body.uID].liked) || ((theGoods[req.body.uID].liked.toString()) == '')) {
                 //...but its liked attribute doesn't exist, or is empty
 
@@ -388,24 +381,30 @@ app.post('/admin/API/users', seshCheck, adminCheck, function(req, res, next) {
             }
         }
         theGoods = JSON.stringify(theGoods);
-        fs.writeFile('assets/users.json', theGoods, function(err, data) {
+        fs.writeFile('users/users.json', theGoods, function(err, data) {
+            console.log("BANG")
+        });
+        let uf = 'users/user_' + req.body.uID + '.json';
+        fs.writeFile(uf, JSON.stringify(req.body), function(err, data) {
             res.send('written');
         });
     });
 });
 
-
-//delete users in admin thing
+//API - kill user admin-side
 app.delete('/admin/API/users', seshCheck, adminCheck, function(req, res, next) {
-    fs.readFile('assets/users.json', function(err, data) {
+    fs.readFile('users/users.json', function(err, data) {
         let parsed = JSON.parse(data.toString());
         let done = false;
         for (entry in parsed) {
             if (req.body.victim == parsed[entry].uID) {
                 parsed.splice(entry, 1);
-                parsed = updateID(parsed);
-                fs.writeFile('assets/users.json', JSON.stringify(parsed), function(err, data) {
-                    done = true;
+                parsed = updateID(parsed, entry, 'u');
+                fs.writeFile('users/users.json', JSON.stringify(parsed), function(err, data) {
+                    let uf = 'users/user_' + req.body.victim + '.json';
+                    fs.unlinkSync(uf, function(err) {
+                        done = true;
+                    });
                 });
             }
         }
@@ -413,31 +412,21 @@ app.delete('/admin/API/users', seshCheck, adminCheck, function(req, res, next) {
     });
 });
 
-//gets template for admin-side card
-app.get('/API/admin/templates/card', seshCheck, adminCheck, function(req, res, next) {
-    fs.readFile('admin/assets/templates.json', function(err, data) {
-        res.json(JSON.parse(data.toString())["card"]);
-    });
-});
-
-//gets template for author-side card
-app.get('/author/API/templates/card', seshCheck, function(req, res, next) {
-    fs.readFile('admin/assets/templates.json', function(err, data) {
-        res.json(JSON.parse(data.toString())["card"]);
-    });
-});
-
-//gets template for admin-side card
-app.get('/API/admin/templates/article', seshCheck, adminCheck, function(req, res, next) {
-    fs.readFile('admin/assets/templates.json', function(err, data) {
-        res.json(JSON.parse(data.toString())["article"]);
-    });
-});
-
-//gets template for admin-side card
-app.get('/author/API/templates/article', seshCheck, function(req, res, next) {
-    fs.readFile('admin/assets/templates.json', function(err, data) {
-        res.json(JSON.parse(data.toString())["article"]);
+//API - kill user admin-side
+app.delete('/admin/API/articles', seshCheck, adminCheck, function(req, res, next) {
+    fs.readFile('assets/articles.json', function(err, data) {
+        let parsed = JSON.parse(data.toString());
+        let done = false;
+        for (entry in parsed) {
+            if (req.body.victim == parsed[entry].aID) {
+                parsed.splice(entry, 1);
+                parsed = updateID(parsed, entry, 'a');
+                fs.writeFile('assets/articles.json', JSON.stringify(parsed), function(err, data) {
+                    done = true;
+                });
+            }
+        }
+        res.send((!done) ? "User Not Found, soz fam" : "Job Done");
     });
 });
 
