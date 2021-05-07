@@ -65,6 +65,12 @@ app.get('/article', function(req, res, next) {
     });
 });
 
+//* SIGN UP PAGE
+app.get('/newUser', function(req, res, next) {
+    fs.readFile('register.html', function(err, data) {
+        res.send(data.toString());
+    });
+});
 
 //*returns the articles "database"
 app.get('/API/articles', function(req, res, next) {
@@ -91,6 +97,7 @@ app.put('/API/article', function(req, res, next) {
     });
 });
 
+//*TEMPLATE FOR CARD -- MAIN
 //*returns card template
 app.get('/API/templates/card', function(req, res, next) {
     fs.readFile('assets/templates.json', function(err, data) {
@@ -126,7 +133,8 @@ app.post('/API/auth/in', function(req, res, next) {
     });
 });
 
-//*verifies user is an authorized writer and wrote the tagged article
+//* AUTHOR VERIFY
+//verifies user is an authorized writer and wrote the tagged article
 app.get('/API/auth/in', function(req, res, next) {
     if (req.query) {
         if (req.session.user) {
@@ -142,7 +150,8 @@ app.get('/API/auth/in', function(req, res, next) {
     }
 });
 
-//*users API -- returns a user.json
+//* Gets a user object
+//returns a user.json
 app.get('/API/user', function(req, res, next) {
     if (fs.existsSync('users/user_' + req.session.user.ID + '.json')) {
         if (req.session.user) {
@@ -157,7 +166,7 @@ app.get('/API/user', function(req, res, next) {
     }
 });
 
-//*overwrite a user entry
+//*UPDATE USER ENTRY
 app.put('/API/user', function(req, res, next) {
     let uf = 'users/user_' + req.session.user.ID + '.json';
     if (fs.existsSync(uf)) {
@@ -167,11 +176,103 @@ app.put('/API/user', function(req, res, next) {
     }
 });
 
-//SIGN IN
-app.get('/newUser', function(req, res, next) {
-    fs.readFile('register.html', function(err, data) {
-        res.send(data.toString());
+//*CREATE A NEW USER
+app.post('/API/user', function(req, res, next) {
+    for (thing in req.body) {
+        if (thing == "liked" || thing == "role" || thing == "uID") {
+            continue;
+        }
+        if (req.body[thing] == '') {
+            res.status(406);
+            res.send(thing);
+            return;
+        }
+    }
+
+    fs.readFile('users/users.json', function(err, data) {
+        let parsed = JSON.parse(data.toString());
+        console.log("parsed");
+        let holdIt = req.body.password;
+        req.body.uID = parsed.length;
+        req.body.role = 2;
+        req.body.password = bcrypt.hashSync(req.body.password, 10);
+        parsed.push(req.body);
+        fs.writeFile('users/users.json', JSON.stringify(parsed), function(err, data) {
+            console.log("users.json updated");
+        });
+        let uf = 'users/user_' + req.body.uID + '.json';
+        fs.writeFile(uf, JSON.stringify(req.body), function(err, data) {
+            console.log(uf + " updated");
+            let ponse = {
+                nameTag: req.body.nameTag,
+                password: holdIt
+            };
+            res.json(ponse);
+        });
     });
+});
+
+//*SIGN IN VERIFY
+//check if username or email is taken, verifies if passwords, email or usernames are valid via matching a regex
+app.get('/API/check', function(req, res, next) {
+    let retMan = {
+        feedback: "",
+        free: 'N'
+    };
+    if (req.query.type) {
+        //blank
+        let re, regcheck;
+        if (req.query.dayda == "") {
+            retMan.feedback += req.query.type + "cannot be blank";
+        } else { //non-blank
+            let looper;
+            if (req.query.type == 'Email') {
+                re = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
+                looper = 'email';
+            } else if (req.query.type == 'password') {
+                re = new RegExp("^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$ %^&*-]).{8,}$");
+            } else {
+                re = /[^0-9a-zA-Z_]/;
+                looper = 'nameTag';
+            }
+            //check user input against regular expression
+            regcheck = re.test(req.query.dayda);
+
+            if ((regcheck && req.query.type == 'Email') || (!regcheck && req.query.type == 'Username')) {
+                retMan.free = 'T';
+                fs.readFile('users/users.json', function(err, data) {
+                    let parsed = JSON.parse(data.toString());
+                    for (let i = 0; i < parsed.length; i++) {
+                        if (parsed[i][looper] == req.query.dayda) {
+                            retMan.free = 'F';
+                            break;
+                        }
+                    }
+                });
+            } else if (regcheck && req.query.type == 'password') {
+                retMan.free = 'V';
+            } else {
+                retMan.feedback = "Eneter a Valid " + req.query.type;
+            }
+            if (retMan.free == 'T') {
+                retMan.feedback = req.query.type + "is available";
+                retMan.free == true;
+            } else if (retMan.free == 'F') {
+                retMan.free == false;
+                retMan.feedback = req.query.type + "is already registered";
+            } else if (retMan.free == 'V') {
+                retMan.feedback = "";
+            }
+        }
+        res.send(retMan);
+        console.log("Send Check");
+    } else {
+        retMan.feedback = "No thingy property in req";
+        retMan.stop = true;
+        res.send(retMan);
+        console.log('ruh roh check no work');
+        console.log(req.body);
+    }
 });
 
 //Author edit
@@ -193,64 +294,6 @@ app.get('/author/articles', seshCheck, function(req, res, next) {
 app.get('/author/edit', seshCheck, function(req, res, next) {
     fs.readFile('edit.html', function(err, data) {
         res.send(data.toString());
-    });
-});
-
-//check if username is taken
-app.post('/API/check', function(req, res, next) {
-    if (req.body.type) {
-        fs.readFile('assets/users.json', function(err, data) {
-            let parsed = JSON.parse(data.toString());
-            let found = false;
-            if (req.body.type == 'Username') {
-                for (let i = 0; i < parsed.length; i++) {
-                    if (parsed[i].nameTag == req.body.dayda) {
-                        found = true;
-                        break;
-                    }
-                }
-            } else if (req.body.type == 'Email') {
-                for (let i = 0; i < parsed.length; i++) {
-                    if (parsed[i].email == req.body.dayda) {
-                        found = true;
-                        break;
-                    }
-                }
-            }
-            res.status(202);
-            res.send(found);
-            console.log("email works");
-        });
-    } else {
-        console.log('ruh roh check no work');
-        console.log(req.body);
-    }
-});
-
-//pushes new user info from signup thing
-app.put('/API/news', function(req, res, next) {
-    for (thing in req.body) {
-        if (thing == "liked" || thing == "role" || thing == "uID") {
-            continue;
-        }
-        if (req.body[thing] == '') {
-            res.status(406);
-            res.send(thing);
-            return;
-        }
-    }
-
-    fs.readFile('assets/users.json', function(err, data) {
-        let parsed = JSON.parse(data.toString());
-        console.log("parsed");
-        req.body.uID = parsed.length;
-        req.body.role = 2;
-        req.body.password = bcrypt.hashSync(req.body.password, 10);
-        parsed.push(req.body);
-        fs.writeFile('assets/users.json', JSON.stringify(parsed), function(err, data) {
-            res.status(201);
-            res.send("user updated");
-        });
     });
 });
 
